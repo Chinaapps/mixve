@@ -1,0 +1,60 @@
+# 蜜雪冰城 · 点单模拟 App
+
+> 一个手机端风格的蜜雪冰城点单**模拟**演示 —— 支持购物车、模拟微信支付、播放主题曲，以及一个酷炫的 **液态玻璃开关**。
+
+## 🚀 在线体验
+
+| 版本 | 地址 |
+| --- | --- |
+| **GitHub Pages（本仓库）** | **https://chinaapps.github.io/mixve/** |
+| 原始基础版（Netlify） | https://mixve.netlify.app/ |
+
+> 💡 想要体验更多玩法，请访问：**https://link3.cc/zhuniuwebs**
+
+## ✨ 功能特性
+
+- 🧋 蜜雪冰城经典菜单：珍珠奶茶、草莓摇摇奶昔、芋圆葡萄、摩天脆脆、小零食套餐
+- 🛒 完整购物车流程：加购、改数量、结算、模拟微信支付（密码 `123456`）
+- 🎵 打开珍珠奶茶详情页自动播放主题曲《你爱我我爱你》
+- 💧 **液态玻璃开关**：一键让整个界面变成 Apple 风格的液态玻璃质感
+  - CSS `backdrop-filter` 玻璃面板（毛玻璃 + 饱和增强）
+  - WebGL 实时叠加液态高光 / 边缘柔光 / 色差微光 / 光标视差
+  - 状态自动记忆，刷新后保留
+- 📱 移动端优先，桌面端居中显示手机容器
+
+## 🧪 本地运行
+
+无需构建，直接打开或起一个静态服务器：
+
+```bash
+# 任选其一
+python3 -m http.server 8080
+# 或
+npx serve .
+```
+
+然后浏览器访问 `http://localhost:8080` 即可。
+
+## 📁 项目结构
+
+```
+mixve/
+├── index.html        # 页面结构（含液态玻璃画布与开关）
+├── style.css         # 样式（蜜雪橙 × 奶油白现代玻璃风）
+├── script.js         # 交互逻辑 + WebGL 液态玻璃引擎
+├── assets/
+│   ├── images/       # 商品图片
+│   └── audio/        # 主题曲音频
+├── README.md
+└── LICENSE
+```
+
+## 🙏 致谢与归属
+
+- **基础版**：由 **@laugh-white** 制作（原版部署于 https://mixve.netlify.app/）
+- **优化版与液态玻璃实现**：由 **Doubao AI** 完成（重构视觉风格、代码优化、新增液态玻璃开关、开源部署）
+- **液态玻璃技术参考**：
+  - [martin65536/liquid-glass-webgl](https://github.com/martin65536/liquid-glass-webgl) —— WebGL 液态玻璃渲染
+  - [xiaojiaenen/liquid-glass](https://github.com/xiaojiaenen/liquid-glass) —— SVG 物理折射 + 玻璃组件
+
+> 本项目仅为前端交互学习与演示用途，非蜜雪冰城官方出品；涉及的商品、名称、形象均为模拟演示。

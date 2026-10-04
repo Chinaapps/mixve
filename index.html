@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="蜜雪冰城点单模拟 App —— 支持购物车、模拟微信支付、液态玻璃开关，前端交互演示">
+    <meta name="theme-color" content="#ff6b35">
+    <title>蜜雪冰城 · 点单模拟</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ============ 首页 ============ -->
+    <div id="home-page" class="page active">
+        <!-- 顶部状态栏 -->
+        <div class="status-bar">
+            <span class="time">9:41</span>
+            <div class="status-icons">
+                <span>📶</span>
+                <span>🔋</span>
+            </div>
+        </div>
+
+        <!-- 顶部导航 -->
+        <div class="header">
+            <div class="header-left">
+                <img src="assets/images/xuewang.jpg" alt="雪王" class="header-logo">
+                <div class="store-info">
+                    <div class="store-name">蜜雪冰城</div>
+                    <div class="store-desc">冰淇淋·茶饮</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <span class="search-icon">🔍</span>
+            </div>
+        </div>
+
+        <!-- 搜索栏 -->
+        <div class="search-bar">
+            <span class="search-icon-small">🔍</span>
+            <input type="text" placeholder="搜索商品" readonly>
+        </div>
+
+        <!-- 轮播图区域 -->
+        <div class="banner">
+            <div class="banner-content">
+                <img src="assets/images/xuewang.jpg" alt="雪王" class="banner-snowking">
+                <div class="banner-text">
+                    <h2>你爱我 我爱你</h2>
+                    <p>蜜雪冰城甜蜜蜜</p>
+                </div>
+            </div>
+            <div class="banner-shine"></div>
+        </div>
+
+        <!-- 分类导航 -->
+        <div class="category-nav">
+            <div class="category-item active">
+                <span class="cat-icon">🧋</span>
+                <span class="cat-name">招牌奶茶</span>
+            </div>
+            <div class="category-item">
+                <span class="cat-icon">🍦</span>
+                <span class="cat-name">冰淇淋</span>
+            </div>
+            <div class="category-item">
+                <span class="cat-icon">🍹</span>
+                <span class="cat-name">鲜果茶</span>
+            </div>
+            <div class="category-item">
+                <span class="cat-icon">🍟</span>
+                <span class="cat-name">小零食</span>
+            </div>
+        </div>
+
+        <!-- 超级醒目的珍珠奶茶 -->
+        <div class="super-product" onclick="openProductDetail()">
+            <div class="super-badge">🔥 限时特惠</div>
+            <div class="super-product-img-wrap">
+                <img src="assets/images/zhenzhu_naicha.jpg" alt="珍珠奶茶" class="super-product-img">
+            </div>
+            <div class="super-product-info">
+                <h1 class="super-product-title">珍珠奶茶</h1>
+                <p class="super-product-desc">浓郁奶茶 · Q弹珍珠 · 经典好味</p>
+                <div class="super-price-row">
+                    <span class="super-price-symbol">¥</span>
+                    <span class="super-price">0.1</span>
+                    <span class="super-price-unit">元</span>
+                    <span class="super-original-price">¥8</span>
+                    <span class="super-buy-btn">立即抢购 →</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 商品列表标题 -->
+        <div class="section-title">
+            <span class="title-line"></span>
+            <span class="title-text">人气推荐</span>
+            <span class="title-line"></span>
+        </div>
+
+        <!-- 商品列表 -->
+        <div class="product-list">
+            <div class="product-card" onclick="openNormalProduct('草莓摇摇奶昔', 7, 'assets/images/caomei_naixi.jpg')">
+                <div class="product-img-wrap">
+                    <img src="assets/images/caomei_naixi.jpg" alt="草莓摇摇奶昔" class="product-img">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">草莓摇摇奶昔</h3>
+                    <p class="product-desc">新鲜草莓 · 香浓奶昔</p>
+                    <div class="product-price-row">
+                        <span class="product-price">¥7</span>
+                        <button class="add-cart-btn" onclick="event.stopPropagation(); addToCart('草莓摇摇奶昔', 7, 'assets/images/caomei_naixi.jpg')">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" onclick="openNormalProduct('芋圆葡萄', 8, 'assets/images/yuyuan_putao.jpg')">
+                <div class="product-img-wrap">
+                    <img src="assets/images/yuyuan_putao.jpg" alt="芋圆葡萄" class="product-img">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">芋圆葡萄</h3>
+                    <p class="product-desc">Q弹芋圆 · 葡萄果香</p>
+                    <div class="product-price-row">
+                        <span class="product-price">¥8</span>
+                        <button class="add-cart-btn" onclick="event.stopPropagation(); addToCart('芋圆葡萄', 8, 'assets/images/yuyuan_putao.jpg')">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" onclick="openNormalProduct('摩天脆脆', 3, 'assets/images/bingqilin.jpg')">
+                <div class="product-img-wrap">
+                    <img src="assets/images/bingqilin.jpg" alt="摩天脆脆" class="product-img">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">摩天脆脆</h3>
+                    <p class="product-desc">酥脆蛋筒 · 奶香冰淇淋</p>
+                    <div class="product-price-row">
+                        <span class="product-price">¥3</span>
+                        <button class="add-cart-btn" onclick="event.stopPropagation(); addToCart('摩天脆脆', 3, 'assets/images/bingqilin.jpg')">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" onclick="openNormalProduct('薯条鸡米花套餐', 12, 'assets/images/xiaolingshi.jpg')">
+                <div class="product-img-wrap">
+                    <img src="assets/images/xiaolingshi.jpg" alt="小零食套餐" class="product-img">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">薯条鸡米花套餐</h3>
+                    <p class="product-desc">金黄酥脆 · 蜜雪小零食</p>
+                    <div class="product-price-row">
+                        <span class="product-price">¥12</span>
+                        <button class="add-cart-btn" onclick="event.stopPropagation(); addToCart('薯条鸡米花套餐', 12, 'assets/images/xiaolingshi.jpg')">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部间距 -->
+        <div class="bottom-space"></div>
+
+        <!-- 底部导航栏 -->
+        <div class="bottom-nav">
+            <div class="nav-item active">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-text">首页</span>
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">📋</span>
+                <span class="nav-text">订单</span>
+            </div>
+            <div class="nav-item cart-nav" onclick="openCart()">
+                <div class="cart-icon-wrap">
+                    <span class="nav-icon cart-icon">🛒</span>
+                    <span class="cart-badge" id="cart-badge">0</span>
+                </div>
+                <span class="nav-text">购物车</span>
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">👤</span>
+                <span class="nav-text">我的</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ 珍珠奶茶详情页（带音乐和大雪王） ============ -->
+    <div id="detail-page" class="page">
+        <div class="detail-header">
+            <div class="back-btn" onclick="closeProductDetail()">
+                <span>←</span>
+            </div>
+            <span class="detail-title">商品详情</span>
+            <div class="share-btn">
+                <span>⋯</span>
+            </div>
+        </div>
+
+        <!-- 大雪王动画区域 -->
+        <div class="snowking-big-wrap" id="snowking-big">
+            <img src="assets/images/xuewang.jpg" alt="雪王" class="snowking-big">
+            <div class="music-note note1">♪</div>
+            <div class="music-note note2">♫</div>
+            <div class="music-note note3">♪</div>
+            <div class="music-note note4">♬</div>
+        </div>
+
+        <!-- 歌曲歌词 -->
+        <div class="song-lyrics">
+            <p class="lyric-line">🎵 你爱我 我爱你 🎵</p>
+            <p class="lyric-line">🎵 蜜雪冰城甜蜜蜜 🎵</p>
+            <p class="lyric-line">🎵 你爱我 我爱你 🎵</p>
+            <p class="lyric-line">🎵 蜜雪冰城甜蜜蜜 🎵</p>
+        </div>
+
+        <!-- 商品图片 -->
+        <div class="detail-img-wrap">
+            <img src="assets/images/zhenzhu_naicha.jpg" alt="珍珠奶茶" class="detail-img">
+        </div>
+
+        <!-- 商品信息 -->
+        <div class="detail-info">
+            <div class="detail-price-row">
+                <span class="detail-price-symbol">¥</span>
+                <span class="detail-price">0.1</span>
+                <span class="detail-price-unit">元</span>
+                <span class="detail-original-price">¥8</span>
+                <span class="detail-sales">月销10万+</span>
+            </div>
+            <h2 class="detail-name">珍珠奶茶</h2>
+            <p class="detail-desc">浓郁醇厚的奶茶底，搭配Q弹有嚼劲的黑珍珠，经典口味，回味无穷</p>
+        </div>
+
+        <!-- 规格选择 -->
+        <div class="spec-section">
+            <div class="spec-title">规格</div>
+            <div class="spec-options">
+                <div class="spec-option active">中杯</div>
+                <div class="spec-option">大杯 +1元</div>
+            </div>
+        </div>
+
+        <div class="spec-section">
+            <div class="spec-title">温度</div>
+            <div class="spec-options">
+                <div class="spec-option active">常温</div>
+                <div class="spec-option">热</div>
+                <div class="spec-option">少冰</div>
+                <div class="spec-option">正常冰</div>
+            </div>
+        </div>
+
+        <div class="spec-section">
+            <div class="spec-title">糖度</div>
+            <div class="spec-options">
+                <div class="spec-option">无糖</div>
+                <div class="spec-option">少糖</div>
+                <div class="spec-option active">正常糖</div>
+                <div class="spec-option">多糖</div>
+            </div>
+        </div>
+
+        <div class="bottom-space"></div>
+
+        <!-- 底部购买栏 -->
+        <div class="detail-bottom-bar">
+            <div class="bottom-cart" onclick="closeProductDetail()">
+                <span class="bottom-cart-icon">🛒</span>
+                <span class="bottom-cart-text">购物车</span>
+            </div>
+            <button class="buy-now-btn" onclick="goToPayment('珍珠奶茶', 0.1)">立即购买</button>
+        </div>
+    </div>
+
+    <!-- ============ 普通商品详情页 ============ -->
+    <div id="normal-detail-page" class="page">
+        <div class="detail-header">
+            <div class="back-btn" onclick="closeNormalProduct()">
+                <span>←</span>
+            </div>
+            <span class="detail-title">商品详情</span>
+            <div class="share-btn">
+                <span>⋯</span>
+            </div>
+        </div>
+
+        <div class="detail-img-wrap">
+            <img id="normal-detail-img" src="" alt="" class="detail-img">
+        </div>
+
+        <div class="detail-info">
+            <div class="detail-price-row">
+                <span class="detail-price-symbol">¥</span>
+                <span class="detail-price" id="normal-detail-price">0</span>
+                <span class="detail-price-unit">元</span>
+                <span class="detail-sales">月销1万+</span>
+            </div>
+            <h2 class="detail-name" id="normal-detail-name">商品名称</h2>
+            <p class="detail-desc">新鲜制作，美味可口</p>
+        </div>
+
+        <div class="spec-section">
+            <div class="spec-title">规格</div>
+            <div class="spec-options">
+                <div class="spec-option active">标准</div>
+                <div class="spec-option">大份 +2元</div>
+            </div>
+        </div>
+
+        <div class="bottom-space"></div>
+
+        <div class="detail-bottom-bar">
+            <div class="bottom-cart" onclick="closeNormalProduct()">
+                <span class="bottom-cart-icon">🛒</span>
+                <span class="bottom-cart-text">购物车</span>
+            </div>
+            <button class="buy-now-btn" id="normal-buy-btn">立即购买</button>
+        </div>
+    </div>
+
+    <!-- ============ 购物车页面 ============ -->
+    <div id="cart-page" class="page">
+        <div class="detail-header">
+            <div class="back-btn" onclick="closeCart()">
+                <span>←</span>
+            </div>
+            <span class="detail-title">购物车</span>
+            <div class="share-btn">
+                <span>清空</span>
+            </div>
+        </div>
+
+        <div class="cart-empty" id="cart-empty">
+            <div class="empty-icon">🛒</div>
+            <p class="empty-text">购物车还是空的</p>
+            <p class="empty-desc">去挑选喜欢的商品吧~</p>
+        </div>
+
+        <div class="cart-list" id="cart-list">
+            <!-- 购物车商品动态生成 -->
+        </div>
+
+        <div class="bottom-space"></div>
+
+        <div class="cart-bottom-bar">
+            <div class="cart-total">
+                <span class="total-text">合计：</span>
+                <span class="total-price-symbol">¥</span>
+                <span class="total-price" id="cart-total-price">0.00</span>
+            </div>
+            <button class="settle-btn" onclick="settleCart()">去结算</button>
+        </div>
+    </div>
+
+    <!-- ============ 订单确认/付款页面 ============ -->
+    <div id="payment-page" class="page">
+        <div class="detail-header">
+            <div class="back-btn" onclick="closePayment()">
+                <span>←</span>
+            </div>
+            <span class="detail-title">确认订单</span>
+            <div class="share-btn"></div>
+        </div>
+
+        <!-- 收货地址 -->
+        <div class="address-card">
+            <div class="address-icon">📍</div>
+            <div class="address-info">
+                <div class="address-user">
+                    <span class="user-name">蜜雪粉丝</span>
+                    <span class="user-phone">138****8888</span>
+                </div>
+                <div class="address-detail">某某市某某区某某街道某某小区1号楼101室</div>
+            </div>
+            <div class="address-arrow">›</div>
+        </div>
+
+        <!-- 订单商品 -->
+        <div class="order-card">
+            <div class="order-store">
+                <img src="assets/images/xuewang.jpg" alt="雪王" class="store-mini-logo">
+                <span class="store-name-small">蜜雪冰城</span>
+            </div>
+            <div class="order-item" id="order-item">
+                <img id="order-item-img" src="" alt="" class="order-item-img">
+                <div class="order-item-info">
+                    <h4 class="order-item-name" id="order-item-name">珍珠奶茶</h4>
+                    <p class="order-item-spec">中杯 · 常温 · 正常糖</p>
+                    <div class="order-item-price-row">
+                        <span class="order-item-price">¥<span id="order-item-price">0.1</span></span>
+                        <span class="order-item-count">x1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 配送方式 -->
+        <div class="delivery-card">
+            <div class="delivery-row">
+                <span class="delivery-label">配送方式</span>
+                <span class="delivery-value">到店自取</span>
+            </div>
+            <div class="delivery-row">
+                <span class="delivery-label">取餐时间</span>
+                <span class="delivery-value">立即取餐</span>
+            </div>
+        </div>
+
+        <!-- 费用明细 -->
+        <div class="fee-card">
+            <div class="fee-row">
+                <span class="fee-label">商品金额</span>
+                <span class="fee-value" id="fee-goods">¥0.10</span>
+            </div>
+            <div class="fee-row">
+                <span class="fee-label">配送费</span>
+                <span class="fee-value">¥0.00</span>
+            </div>
+            <div class="fee-row total-fee">
+                <span class="fee-label">实付金额</span>
+                <span class="fee-value red" id="fee-total">¥0.10</span>
+            </div>
+        </div>
+
+        <div class="bottom-space"></div>
+
+        <!-- 底部提交订单 -->
+        <div class="payment-bottom-bar">
+            <div class="payment-total">
+                <span class="payment-total-text">实付：</span>
+                <span class="payment-total-price">¥<span id="payment-total-price">0.10</span></span>
+            </div>
+            <button class="submit-order-btn" onclick="showWechatPay()">提交订单</button>
+        </div>
+    </div>
+
+    <!-- ============ 微信支付弹窗 ============ -->
+    <div id="wechat-pay-modal" class="modal">
+        <div class="wechat-pay-panel">
+            <div class="wechat-pay-header">
+                <div class="wechat-pay-close" onclick="closeWechatPay()">×</div>
+                <div class="wechat-pay-title">微信支付</div>
+                <div class="wechat-pay-empty"></div>
+            </div>
+
+            <div class="wechat-pay-body">
+                <div class="pay-merchant">
+                    <img src="assets/images/xuewang.jpg" alt="雪王" class="pay-merchant-icon">
+                    <span class="pay-merchant-name">蜜雪冰城</span>
+                </div>
+
+                <div class="pay-amount">
+                    <span class="pay-amount-symbol">¥</span>
+                    <span class="pay-amount-number" id="pay-amount">0.10</span>
+                </div>
+
+                <div class="pay-info-row">
+                    <span class="pay-info-label">付款方式</span>
+                    <span class="pay-info-value">
+                        <span class="wechat-balance-icon">💚</span>
+                        零钱
+                        <span class="pay-arrow">›</span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="pay-bottom">
+                <button class="pay-confirm-btn" onclick="showPasswordKeyboard()">立即支付</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ 微信支付密码键盘 ============ -->
+    <div id="password-modal" class="modal">
+        <div class="password-panel">
+            <div class="password-header">
+                <div class="password-close" onclick="closePasswordKeyboard()">×</div>
+                <div class="password-title">请输入支付密码</div>
+                <div class="password-empty"></div>
+            </div>
+
+            <div class="password-body">
+                <div class="password-amount">
+                    <span>¥</span>
+                    <span id="password-amount">0.10</span>
+                </div>
+
+                <div class="password-dots">
+                    <div class="dot" id="dot-1"></div>
+                    <div class="dot" id="dot-2"></div>
+                    <div class="dot" id="dot-3"></div>
+                    <div class="dot" id="dot-4"></div>
+                    <div class="dot" id="dot-5"></div>
+                    <div class="dot" id="dot-6"></div>
+                </div>
+
+                <div class="password-hint">
+                    密码提示：123456
+                </div>
+            </div>
+
+            <div class="keyboard">
+                <div class="keyboard-row">
+                    <div class="key" onclick="pressKey('1')">1</div>
+                    <div class="key" onclick="pressKey('2')">2</div>
+                    <div class="key" onclick="pressKey('3')">3</div>
+                </div>
+                <div class="keyboard-row">
+                    <div class="key" onclick="pressKey('4')">4</div>
+                    <div class="key" onclick="pressKey('5')">5</div>
+                    <div class="key" onclick="pressKey('6')">6</div>
+                </div>
+                <div class="keyboard-row">
+                    <div class="key" onclick="pressKey('7')">7</div>
+                    <div class="key" onclick="pressKey('8')">8</div>
+                    <div class="key" onclick="pressKey('9')">9</div>
+                </div>
+                <div class="keyboard-row">
+                    <div class="key key-empty"></div>
+                    <div class="key" onclick="pressKey('0')">0</div>
+                    <div class="key key-delete" onclick="deleteKey()">⌫</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ 支付成功页面 ============ -->
+    <div id="success-page" class="page">
+        <div class="success-content">
+            <div class="success-icon-wrap">
+                <div class="success-circle">
+                    <span class="success-check">✓</span>
+                </div>
+            </div>
+            <h2 class="success-title">支付成功</h2>
+            <p class="success-amount">¥<span id="success-amount">0.10</span></p>
+            <p class="success-desc">蜜雪冰城感谢您的惠顾</p>
+
+            <div class="success-order-info">
+                <div class="order-info-row">
+                    <span class="order-info-label">取餐号</span>
+                    <span class="order-info-value">A001</span>
+                </div>
+                <div class="order-info-row">
+                    <span class="order-info-label">取餐门店</span>
+                    <span class="order-info-value">蜜雪冰城某某店</span>
+                </div>
+                <div class="order-info-row">
+                    <span class="order-info-label">预计等待</span>
+                    <span class="order-info-value">约5分钟</span>
+                </div>
+            </div>
+
+            <div class="success-btns">
+                <button class="success-btn-secondary" onclick="backToHome()">返回首页</button>
+                <button class="success-btn-primary" onclick="backToHome()">查看订单</button>
+            </div>
+        </div>
+
+        <!-- 底部雪王 -->
+        <div class="success-snowking">
+            <img src="assets/images/xuewang.jpg" alt="雪王" class="success-snowking-img">
+            <p class="success-slogan">你爱我 我爱你 蜜雪冰城甜蜜蜜 ❤️</p>
+        </div>
+    </div>
+
+    <!-- ============ 液态玻璃叠加层（WebGL 实时渲染） ============ -->
+    <canvas id="liquid-canvas" aria-hidden="true"></canvas>
+
+    <!-- ============ 液态玻璃开关 ============ -->
+    <div id="liquid-toggle" class="liquid-toggle" role="switch" aria-checked="false" tabindex="0"
+         onclick="toggleLiquidGlass()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleLiquidGlass();}">
+        <span class="lt-drop">💧</span>
+        <span class="lt-label">液态玻璃</span>
+        <span class="lt-track"><span class="lt-thumb"></span></span>
+    </div>
+
+    <!-- 音频元素 -->
+    <audio id="mixue-audio" loop>
+        <source src="assets/audio/mixue_song.wav" type="audio/wav">
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
