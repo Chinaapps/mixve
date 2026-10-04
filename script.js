@@ -24,6 +24,131 @@ function showPage(pageId) {
     });
     document.getElementById(pageId).classList.add('active');
     window.scrollTo(0, 0);
+
+    // tab 页显示全局底部栏；详情/支付/成功等全屏页隐藏
+    const idx = TAB_INDEX[pageId];
+    if (idx !== undefined) {
+        document.body.classList.remove('no-tab-nav');
+        currentTab = idx;
+        setNavActive(idx);
+    } else {
+        document.body.classList.add('no-tab-nav');
+    }
+    updateCartSettle();
+}
+
+/* ============================================================
+  底部栏 Tab 系统（可拖动切换 + 360°×间隔页数旋转动画）
+  ============================================================ */
+const TAB_PAGE_IDS = ['home-page', 'orders-page', 'cart-page', 'profile-page'];
+const TAB_INDEX = { 'home-page': 0, 'orders-page': 1, 'cart-page': 2, 'profile-page': 3 };
+let currentTab = 0;
+let dragFromIdx = -1;
+const mainNav = document.getElementById('main-nav');
+
+function setNavActive(idx) {
+    if (!mainNav) return;
+    mainNav.querySelectorAll('.tab-item').forEach(item => {
+        item.classList.toggle('active', Number(item.dataset.tab) === idx);
+    });
+}
+
+// 购物车结算条：仅购物车 tab 且购物车非空时显示
+function updateCartSettle() {
+    const bar = document.getElementById('cart-settle-bar');
+    if (!bar) return;
+    const onCartTab = document.getElementById('cart-page').classList.contains('active');
+    bar.classList.toggle('show', onCartTab && cart.length > 0);
+}
+
+// 页面旋转到位动画：--rot = 间隔页数 × 360°（带符号），--dur 时长
+function spinPage(pageId, delta) {
+    const gap = Math.abs(delta);
+    if (!gap) return;
+    const dir = delta < 0 ? -1 : 1;
+    const el = document.getElementById(pageId);
+    if (!el) return;
+    const dur = 0.5 + gap * 0.14;
+    el.style.setProperty('--rot', (dir * gap * 360) + 'deg');
+    el.style.setProperty('--dur', dur + 's');
+    el.classList.remove('spinning');
+    void el.offsetWidth; // 强制回流以重启动画
+    el.classList.add('spinning');
+    el.addEventListener('animationend', function done() {
+        el.classList.remove('spinning');
+        el.removeEventListener('animationend', done);
+    });
+}
+
+// 切换到某个 tab（可选择播放旋转动画，可从指定起点计算旋转圈数）
+function switchTab(idx, animate = true, spinFromIdx = null) {
+    idx = Math.max(0, Math.min(TAB_PAGE_IDS.length - 1, idx));
+    const src = (spinFromIdx === null) ? currentTab : spinFromIdx;
+    showPage(TAB_PAGE_IDS[idx]);
+    if (animate) {
+        const gap = Math.abs(idx - src);
+        if (gap > 0) spinPage(TAB_PAGE_IDS[idx], idx - src);
+    }
+}
+
+// 拖动过程中的实时预览切换（不做旋转动画，避免闪烁）
+function previewTab(idx) {
+    idx = Math.max(0, Math.min(TAB_PAGE_IDS.length - 1, idx));
+    showPage(TAB_PAGE_IDS[idx]);
+}
+
+// 初始化可拖动底部栏
+function initTabNav() {
+    if (!mainNav) return;
+    let dragging = false;
+    let lastIdx = -1;
+    let pointerId = null;
+
+    function idxFromClientX(clientX) {
+        const r = mainNav.getBoundingClientRect();
+        if (r.width <= 0) return 0;
+        const x = clientX - r.left;
+        const n = TAB_PAGE_IDS.length;
+        return Math.max(0, Math.min(n - 1, Math.floor(x / (r.width / n))));
+    }
+
+    mainNav.addEventListener('pointerdown', function(e) {
+        dragging = true;
+        pointerId = e.pointerId;
+        dragFromIdx = currentTab;
+        try { mainNav.setPointerCapture(e.pointerId); } catch (_) {}
+        mainNav.classList.add('scrubbing');
+        document.body.classList.add('scrubbing');
+        lastIdx = idxFromClientX(e.clientX);
+        previewTab(lastIdx);
+        setNavActive(lastIdx);
+        e.preventDefault();
+    });
+
+    mainNav.addEventListener('pointermove', function(e) {
+        if (!dragging) return;
+        const i = idxFromClientX(e.clientX);
+        if (i !== lastIdx) {
+            lastIdx = i;
+            previewTab(i);
+            setNavActive(i);
+        }
+    });
+
+    function endDrag() {
+        if (!dragging) return;
+        dragging = false;
+        try { mainNav.releasePointerCapture(pointerId); } catch (_) {}
+        mainNav.classList.remove('scrubbing');
+        document.body.classList.remove('scrubbing');
+        const i = lastIdx;
+        // 松手：以拖动起点为参照，按间隔页数旋转到位
+        switchTab(i, true, dragFromIdx);
+        dragFromIdx = -1;
+    }
+
+    mainNav.addEventListener('pointerup', endDrag);
+    mainNav.addEventListener('pointercancel', endDrag);
 }
 
 // ---------------- 珍珠奶茶详情页（带音乐） ----------------
@@ -80,7 +205,7 @@ function openNormalProduct(name, price, img) {
 function closeNormalProduct() { showPage('home-page'); }
 
 // ---------------- 购物车 ----------------
-function openCart() { updateCartUI(); showPage('cart-page'); }
+function openCart() { updateCartUI(); switchTab(2); }
 function closeCart() { showPage('home-page'); }
 
 function updateCartUI() {
@@ -124,6 +249,7 @@ function updateCartUI() {
     cartBadge.textContent = totalCount;
     cartBadge.style.display = totalCount > 0 ? 'flex' : 'none';
     totalPrice.textContent = totalMoney.toFixed(2);
+    updateCartSettle();
 }
 
 function changeQuantity(index, delta) {
@@ -244,13 +370,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('click', function() {
-            if (this.classList.contains('cart-nav')) return;
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            this.classList.add('active');
-        });
-    });
+    // 底部导航：可拖动切换（由 initTabNav 处理）
+    initTabNav();
 
     updateCartUI();
     LiquidGlass.init();
