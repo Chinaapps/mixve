@@ -43,8 +43,74 @@ function showPage(pageId) {
 const TAB_PAGE_IDS = ['home-page', 'orders-page', 'cart-page', 'profile-page'];
 const TAB_INDEX = { 'home-page': 0, 'orders-page': 1, 'cart-page': 2, 'profile-page': 3 };
 let currentTab = 0;
-let dragFromIdx = -1;
 const mainNav = document.getElementById('main-nav');
+const navKnob = document.getElementById('nav-knob');
+const KNOB_COUNT = TAB_PAGE_IDS.length;
+
+// 旋钮物理状态：x 为 0..3 的 tab 坐标；scale/opacity 受“风阻力”影响
+const knobState = {
+    x: 0, v: 0, scale: 1, opacity: 1,
+    target: null, dragging: false, pointerNorm: 0, raf: 0
+};
+
+function clampKnobX(x) { return Math.max(0, Math.min(KNOB_COUNT - 1, x)); }
+
+// 将旋钮状态绘制到 DOM（位移 + 缩放 + 通透度 + 高亮）
+function applyKnob() {
+    if (!navKnob || !mainNav) return;
+    const itemW = mainNav.clientWidth / KNOB_COUNT;
+    const cx = (knobState.x + 0.5) * itemW;
+    const half = navKnob.clientWidth / 2;
+    navKnob.style.transform =
+        'translateX(' + (cx - half) + 'px) scale(' + knobState.scale.toFixed(3) + ')';
+    navKnob.style.opacity = knobState.opacity.toFixed(3);
+    setNavActive(clampKnobX(Math.round(knobState.x)));
+}
+
+// 旋钮物理循环
+function knobFrame() {
+    const s = knobState;
+    let busy = true;
+
+    if (s.dragging) {
+        // 手指拖动：跟随手指；风阻力让旋钮随速度放大、更通透
+        const nx = clampKnobX(s.pointerNorm);
+        s.v = (nx - s.x) * 55;
+        s.x = nx;
+        const speed = Math.abs(s.v);
+        s.scale = 1 + Math.min(0.7, speed * 0.014);   // 越快越大
+        s.opacity = Math.max(0.35, 1 - speed * 0.014); // 越快越通透
+        setNavActive(clampKnobX(Math.round(s.x)));
+    } else if (s.target !== null) {
+        // 手指停止后：弹簧回中 + 空气阻力阻尼，到达最近 tab 再切换页面
+        s.v += (s.target - s.x) * 0.34;
+        s.v *= 0.80;
+        s.x += s.v;
+        s.scale += (1 - s.scale) * 0.18;
+        s.opacity += (1 - s.opacity) * 0.18;
+        if (Math.abs(s.target - s.x) < 0.006 && Math.abs(s.v) < 0.02) {
+            const idx = clampKnobX(Math.round(s.target));
+            s.target = null; s.v = 0; s.x = idx;
+            applyKnob();
+            s.raf = 0;
+            switchTab(idx, true, currentTab); // 手指停止后才判定并切换页面
+            return;
+        }
+    } else {
+        // 静止：恢复大小与通透度
+        s.scale += (1 - s.scale) * 0.15;
+        s.opacity += (1 - s.opacity) * 0.15;
+        busy = !(Math.abs(1 - s.scale) < 0.005 && Math.abs(1 - s.opacity) < 0.005);
+        if (!busy) { s.scale = 1; s.opacity = 1; }
+    }
+
+    applyKnob();
+    s.raf = busy ? requestAnimationFrame(knobFrame) : 0;
+}
+
+function ensureKnobLoop() {
+    if (!knobState.raf) knobState.raf = requestAnimationFrame(knobFrame);
+}
 
 function setNavActive(idx) {
     if (!mainNav) return;
@@ -80,59 +146,46 @@ function spinPage(pageId, delta) {
     });
 }
 
-// 切换到某个 tab（可选择播放旋转动画，可从指定起点计算旋转圈数）
+// 切换到某个 tab（含旋转动画），并让旋钮移动到位
 function switchTab(idx, animate = true, spinFromIdx = null) {
-    idx = Math.max(0, Math.min(TAB_PAGE_IDS.length - 1, idx));
+    idx = clampKnobX(idx);
     const src = (spinFromIdx === null) ? currentTab : spinFromIdx;
     showPage(TAB_PAGE_IDS[idx]);
+    // 旋钮定位到目标 tab
+    knobState.x = idx; knobState.v = 0; knobState.target = null;
+    knobState.scale = 1; knobState.opacity = 1;
+    applyKnob();
     if (animate) {
         const gap = Math.abs(idx - src);
         if (gap > 0) spinPage(TAB_PAGE_IDS[idx], idx - src);
     }
 }
 
-// 拖动过程中的实时预览切换（不做旋转动画，避免闪烁）
-function previewTab(idx) {
-    idx = Math.max(0, Math.min(TAB_PAGE_IDS.length - 1, idx));
-    showPage(TAB_PAGE_IDS[idx]);
-}
-
-// 初始化可拖动底部栏
+// 初始化可拖动圆形旋钮
 function initTabNav() {
     if (!mainNav) return;
     let dragging = false;
-    let lastIdx = -1;
     let pointerId = null;
-
-    function idxFromClientX(clientX) {
-        const r = mainNav.getBoundingClientRect();
-        if (r.width <= 0) return 0;
-        const x = clientX - r.left;
-        const n = TAB_PAGE_IDS.length;
-        return Math.max(0, Math.min(n - 1, Math.floor(x / (r.width / n))));
-    }
 
     mainNav.addEventListener('pointerdown', function(e) {
         dragging = true;
         pointerId = e.pointerId;
-        dragFromIdx = currentTab;
         try { mainNav.setPointerCapture(e.pointerId); } catch (_) {}
         mainNav.classList.add('scrubbing');
         document.body.classList.add('scrubbing');
-        lastIdx = idxFromClientX(e.clientX);
-        previewTab(lastIdx);
-        setNavActive(lastIdx);
+        knobState.dragging = true;
+        const r = mainNav.getBoundingClientRect();
+        const itemW = r.width / KNOB_COUNT;
+        knobState.pointerNorm = (e.clientX - r.left) / itemW - 0.5;
+        ensureKnobLoop();
         e.preventDefault();
     });
 
     mainNav.addEventListener('pointermove', function(e) {
         if (!dragging) return;
-        const i = idxFromClientX(e.clientX);
-        if (i !== lastIdx) {
-            lastIdx = i;
-            previewTab(i);
-            setNavActive(i);
-        }
+        const r = mainNav.getBoundingClientRect();
+        const itemW = r.width / KNOB_COUNT;
+        knobState.pointerNorm = (e.clientX - r.left) / itemW - 0.5;
     });
 
     function endDrag() {
@@ -141,14 +194,16 @@ function initTabNav() {
         try { mainNav.releasePointerCapture(pointerId); } catch (_) {}
         mainNav.classList.remove('scrubbing');
         document.body.classList.remove('scrubbing');
-        const i = lastIdx;
-        // 松手：以拖动起点为参照，按间隔页数旋转到位
-        switchTab(i, true, dragFromIdx);
-        dragFromIdx = -1;
+        knobState.dragging = false;
+        // 手指停止后才计算应停靠的页面
+        knobState.target = clampKnobX(Math.round(knobState.x));
+        ensureKnobLoop();
     }
 
     mainNav.addEventListener('pointerup', endDrag);
     mainNav.addEventListener('pointercancel', endDrag);
+
+    applyKnob();
 }
 
 // ---------------- 珍珠奶茶详情页（带音乐） ----------------
@@ -370,11 +425,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // 底部导航：可拖动切换（由 initTabNav 处理）
+    // 底部导航：可拖动圆形旋钮（由 initTabNav 处理）
     initTabNav();
 
     updateCartUI();
     LiquidGlass.init();
+    initGlassOpacity();
+    initFingerGlow();
 });
 
 // 点击弹窗背景关闭
@@ -567,11 +624,11 @@ const LiquidGlass = (function() {
 
     function enable() {
         if (enabled) return;
+        const panel = document.getElementById('liquid-panel');
         if (!initGL()) {
             // WebGL 不可用：仅保留 CSS 玻璃降级效果
             document.body.classList.add('liquid-glass');
-            document.getElementById('liquid-toggle').classList.add('on');
-            document.getElementById('liquid-toggle').setAttribute('aria-checked', 'true');
+            setGlassOn(panel);
             enabled = true;
             return;
         }
@@ -579,8 +636,7 @@ const LiquidGlass = (function() {
         enabled = true;
         startTime = performance.now();
         document.body.classList.add('liquid-glass');
-        document.getElementById('liquid-toggle').classList.add('on');
-        document.getElementById('liquid-toggle').setAttribute('aria-checked', 'true');
+        setGlassOn(panel);
         rafId = requestAnimationFrame(frame);
     }
 
@@ -588,8 +644,7 @@ const LiquidGlass = (function() {
         if (!enabled) return;
         enabled = false;
         document.body.classList.remove('liquid-glass');
-        document.getElementById('liquid-toggle').classList.remove('on');
-        document.getElementById('liquid-toggle').setAttribute('aria-checked', 'false');
+        setGlassOff(document.getElementById('liquid-panel'));
         if (canvas) canvas.style.opacity = 0;
         if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
     }
@@ -631,4 +686,56 @@ function toggleLiquidGlass() {
         LiquidGlass.enable();
         localStorage.setItem('mixve-liquid-glass', '1');
     }
+}
+
+// 面板开关态
+function setGlassOn(panel) {
+    if (panel) panel.classList.add('on');
+    const row = document.getElementById('liquid-toggle');
+    if (row) { row.classList.add('on'); row.setAttribute('aria-checked', 'true'); }
+}
+function setGlassOff(panel) {
+    if (panel) panel.classList.remove('on');
+    const row = document.getElementById('liquid-toggle');
+    if (row) { row.classList.remove('on'); row.setAttribute('aria-checked', 'false'); }
+}
+
+// 液态玻璃通透度滑杆：0=毛玻璃，100=极通透
+function initGlassOpacity() {
+    const slider = document.getElementById('glass-opacity');
+    if (!slider) return;
+    const val = document.getElementById('glass-slider-val');
+    function apply(v) {
+        const t = Number(v) / 100;
+        document.body.style.setProperty('--glass-alpha', (0.55 - 0.45 * t).toFixed(3));
+        document.body.style.setProperty('--glass-blur', (26 - 22 * t).toFixed(1) + 'px');
+        if (val) val.textContent = v;
+    }
+    slider.addEventListener('input', function() {
+        apply(slider.value);
+        localStorage.setItem('mixve-glass-opacity', slider.value);
+    });
+    const saved = localStorage.getItem('mixve-glass-opacity');
+    slider.value = (saved !== null) ? saved : '70';
+    apply(slider.value);
+}
+
+// 手指光晕：液态玻璃开启时，按压元素时光晕跟随手指
+function initFingerGlow() {
+    const g = document.getElementById('finger-glow');
+    if (!g) return;
+    function place(x, y) {
+        if (!document.body.classList.contains('liquid-glass')) return;
+        g.style.left = x + 'px';
+        g.style.top = y + 'px';
+        g.style.opacity = '1';
+    }
+    function hide() { g.style.opacity = '0'; }
+    window.addEventListener('pointerdown', function(e) { place(e.clientX, e.clientY); }, true);
+    window.addEventListener('pointermove', function(e) {
+        if (g.style.opacity === '1') { g.style.left = e.clientX + 'px'; g.style.top = e.clientY + 'px'; }
+    }, true);
+    window.addEventListener('pointerup', hide, true);
+    window.addEventListener('pointercancel', hide, true);
+    window.addEventListener('blur', hide);
 }

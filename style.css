@@ -17,6 +17,11 @@
     --shadow-lg: 0 14px 40px rgba(255, 107, 53, 0.22);
     --radius: 16px;
     --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    /* 液态玻璃通透度参数（可由滑杆实时调整）：
+       alpha 越低越通透，blur 越低越清晰 */
+    --glass-alpha: 0.26;
+    --glass-blur: 14px;
+    --glass-sat: 180%;
 }
 
 * {
@@ -332,7 +337,7 @@ body {
 /* ---------------- 底部间距 ---------------- */
 .bottom-space { height: 96px; }
 
-/* ---------------- 底部导航栏 ---------------- */
+/* ---------------- 底部导航栏（圆形 + 可拖动圆旋钮） ---------------- */
 .bottom-nav {
     position: fixed;
     bottom: 12px;
@@ -345,24 +350,66 @@ body {
     -webkit-backdrop-filter: blur(16px) saturate(160%);
     display: flex;
     justify-content: space-around;
-    padding: 8px 6px;
+    align-items: center;
+    padding: 10px 8px;
     border: 1px solid rgba(255, 255, 255, 0.7);
-    border-radius: 26px;
+    border-radius: 999px;   /* 圆形胶囊 */
     box-shadow: 0 8px 30px rgba(43, 43, 53, 0.12);
     z-index: 100;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* 圆形可拖动小旋钮 */
+.nav-knob {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    margin-top: -28px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 32% 26%, rgba(255,255,255,0.98), rgba(255,255,255,0.72) 45%, rgba(255,245,240,0.6) 100%);
+    box-shadow:
+        0 6px 18px rgba(255, 107, 53, 0.35),
+        inset 0 0 0 1px rgba(255,255,255,0.7),
+        inset 0 -6px 12px rgba(255,107,53,0.18);
+    will-change: transform;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 1;
+}
+.nav-knob::after {
+    content: '';
+    position: absolute;
+    inset: 14px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 32%, #ffb27a, #ff6b35 70%);
+    opacity: 0.9;
+}
+.nav-knob::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.4), transparent 70%);
+    opacity: 0.6;
 }
 
 .nav-item {
+    position: relative;
+    z-index: 2;
     display: flex; flex-direction: column; align-items: center; gap: 2px;
     cursor: pointer; padding: 4px 14px; border-radius: 16px;
     transition: all 0.2s var(--spring);
 }
-.nav-item.active { background: rgba(255, 107, 53, 0.1); }
+.nav-item.active { background: rgba(255, 107, 53, 0.12); }
 
-.nav-item.active .nav-icon { color: var(--brand); }
+.nav-item.active .nav-icon { color: var(--brand); transform: translateY(-2px) scale(1.08); }
 .nav-item.active .nav-text { color: var(--brand); font-weight: 700; }
 .nav-icon { font-size: 22px; transition: transform 0.2s var(--spring); }
-.nav-item.active .nav-icon { transform: translateY(-2px); }
 .nav-text { font-size: 11px; color: var(--ink-mute); }
 
 .cart-nav { position: relative; }
@@ -797,28 +844,36 @@ body {
 }
 
 /* ============================================================
-  液态玻璃开关
+  液态玻璃控制面板（开关 + 通透度滑杆）
   ============================================================ */
-.liquid-toggle {
+.liquid-panel {
     position: fixed;
-    top: 96px; right: 12px;
+    top: 92px; right: 12px;
     z-index: 950;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 6px;
+    background: rgba(255, 255, 255, 0.66);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.78);
+    border-radius: 20px;
+    box-shadow: 0 8px 26px rgba(43, 43, 53, 0.18);
+    transition: box-shadow 0.2s ease;
+}
+.liquid-panel-row {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 7px 10px;
-    background: rgba(255, 255, 255, 0.62);
-    backdrop-filter: blur(14px) saturate(160%);
-    -webkit-backdrop-filter: blur(14px) saturate(160%);
-    border: 1px solid rgba(255, 255, 255, 0.75);
-    border-radius: 999px;
-    box-shadow: 0 6px 22px rgba(43, 43, 53, 0.16);
+    padding: 5px 8px;
+    border-radius: 14px;
     cursor: pointer;
     user-select: none;
     -webkit-user-select: none;
-    transition: transform 0.2s var(--spring), box-shadow 0.2s ease;
+    transition: transform 0.2s var(--spring);
 }
-.liquid-toggle:active { transform: scale(0.95); }
+.liquid-panel-row:active { transform: scale(0.95); }
 .lt-drop { font-size: 15px; }
 .lt-label { font-size: 12px; font-weight: 700; color: var(--ink); white-space: nowrap; }
 
@@ -840,85 +895,139 @@ body {
     transition: transform 0.25s var(--spring);
 }
 /* 开启状态 */
-.liquid-toggle.on {
-    background: rgba(255, 255, 255, 0.7);
-    box-shadow: 0 6px 22px rgba(255, 107, 53, 0.35);
-}
-.liquid-toggle.on .lt-track {
+.liquid-panel.on { box-shadow: 0 8px 26px rgba(255, 107, 53, 0.35); }
+.liquid-panel-row.on .lt-track {
     background: linear-gradient(90deg, var(--brand), var(--brand-deep));
 }
-.liquid-toggle.on .lt-thumb { transform: translateX(16px); }
+.liquid-panel-row.on .lt-thumb { transform: translateX(16px); }
+
+/* 通透度滑杆 */
+.glass-slider-wrap {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px 10px;
+    border-top: 1px solid rgba(43,43,53,0.08);
+    margin-top: 2px;
+}
+body.liquid-glass .glass-slider-wrap { display: flex; }
+.glass-slider-label { font-size: 11px; font-weight: 700; color: var(--ink-soft); white-space: nowrap; }
+#glass-opacity {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--brand), rgba(255,107,53,0.25));
+    outline: none;
+    cursor: pointer;
+}
+#glass-opacity::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid var(--brand);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+#glass-opacity::-moz-range-thumb {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid var(--brand);
+}
+.glass-slider-val {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--brand);
+    min-width: 20px;
+    text-align: center;
+}
 
 /* ============================================================
-  液态玻璃开启时：界面面板玻璃化
+  手指光晕（按压玻璃元素时跟随手指）
+  ============================================================ */
+.finger-glow {
+    position: fixed;
+    top: 0; left: 0;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.55), rgba(255,255,255,0.18) 40%, transparent 70%);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 1200;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    mix-blend-mode: screen;
+}
+
+/* ============================================================
+  液态玻璃开启时：所有页面 / 卡片 / 按钮全部玻璃化
+  （通透度由 --glass-alpha / --glass-blur 统一控制）
   ============================================================ */
 body.liquid-glass .page,
 body.liquid-glass .page.active {
     background: transparent;
 }
-
 body.liquid-glass .status-bar { color: var(--ink); }
 
-body.liquid-glass .header,
-body.liquid-glass .detail-header {
-    background: rgba(255, 255, 255, 0.42);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
-}
-
-body.liquid-glass .category-nav {
-    background: rgba(255, 255, 255, 0.38);
-    backdrop-filter: blur(22px) saturate(170%);
-    -webkit-backdrop-filter: blur(22px) saturate(170%);
-}
-
-body.liquid-glass .super-product {
-    background: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(20px) saturate(170%);
-    -webkit-backdrop-filter: blur(20px) saturate(170%);
-}
-
-body.liquid-glass .product-card,
-body.liquid-glass .detail-info,
-body.liquid-glass .spec-section,
-body.liquid-glass .cart-item,
-body.liquid-glass .address-card,
-body.liquid-glass .order-card,
-body.liquid-glass .delivery-card,
-body.liquid-glass .fee-card,
-body.liquid-glass .success-order-info {
-    background: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(22px) saturate(180%);
-    -webkit-backdrop-filter: blur(22px) saturate(180%);
+/* 面板类表面：卡片、区块、栏 */
+body.liquid-glass :is(
+    .header, .detail-header, .category-nav, .search-bar,
+    .super-product, .product-card, .detail-info, .spec-section,
+    .cart-item, .address-card, .order-card, .delivery-card, .fee-card,
+    .success-order-info, .profile-card, .profile-stats, .profile-menu,
+    .order-card-mini, .order-tabs,
+    .bottom-nav, .detail-bottom-bar, .cart-settle-bar, .payment-bottom-bar,
+    .wechat-pay-panel, .password-panel
+) {
+    background: rgba(255, 255, 255, var(--glass-alpha));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
     border-color: rgba(255, 255, 255, 0.6);
 }
 
-body.liquid-glass .bottom-nav,
-body.liquid-glass .detail-bottom-bar,
-body.liquid-glass .cart-bottom-bar,
-body.liquid-glass .payment-bottom-bar {
-    background: rgba(255, 255, 255, 0.35);
-    backdrop-filter: blur(26px) saturate(190%);
-    -webkit-backdrop-filter: blur(26px) saturate(190%);
-    border-color: rgba(255, 255, 255, 0.55);
+/* 可点击按钮、选项、输入点：液态玻璃 */
+body.liquid-glass :is(
+    .spec-option, .order-tab, .menu-item,
+    .add-cart-btn, .buy-now-btn, .settle-btn, .submit-order-btn,
+    .pay-confirm-btn, .success-btn-secondary, .success-btn-primary,
+    .quantity-btn, .key, .back-btn, .dot, .bottom-cart, .cart-tab
+) {
+    background: rgba(255, 255, 255, calc(var(--glass-alpha) + 0.06));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    box-shadow: 0 2px 10px rgba(43, 43, 53, 0.08);
 }
 
-body.liquid-glass .wechat-pay-panel,
-body.liquid-glass .password-panel {
-    background: rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(28px) saturate(190%);
-    -webkit-backdrop-filter: blur(28px) saturate(190%);
+/* 品牌色按钮：保留暖橙渐变但透出玻璃背景 */
+body.liquid-glass :is(
+    .add-cart-btn, .buy-now-btn, .settle-btn, .submit-order-btn,
+    .pay-confirm-btn, .success-btn-primary, .quantity-btn.plus,
+    .super-buy-btn, .cart-badge
+) {
+    background: linear-gradient(90deg,
+        rgba(255, 71, 87, calc(var(--glass-alpha) + 0.28)),
+        rgba(255, 107, 53, calc(var(--glass-alpha) + 0.28)));
+    color: #fff;
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
 }
 
-body.liquid-glass .search-bar,
 body.liquid-glass .banner {
-    backdrop-filter: blur(12px) saturate(160%);
-    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
 }
 
 body.liquid-glass .snowking-big-wrap {
     background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,245,240,0.4) 100%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
 }
+
+/* 手指光晕：液态玻璃开启时跟随按压 */
+body.liquid-glass .finger-glow { display: block; }
 
 /* ---------------- 动效降级（用户偏好减弱动画） ---------------- */
 @media (prefers-reduced-motion: reduce) {

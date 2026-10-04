@@ -572,8 +572,9 @@
         <button class="settle-btn" onclick="settleCart()">去结算</button>
     </div>
 
-    <!-- ============ 可拖动底部导航栏（全局） ============ -->
+    <!-- ============ 可拖动圆形底部导航栏（全局） ============ -->
     <div class="bottom-nav" id="main-nav">
+        <div class="nav-knob" id="nav-knob"></div>
         <div class="nav-item tab-item active" data-tab="0">
             <span class="nav-icon">🏠</span>
             <span class="nav-text">首页</span>
@@ -595,13 +596,23 @@
         </div>
     </div>
 
-    <!-- ============ 液态玻璃开关 ============ -->
-    <div id="liquid-toggle" class="liquid-toggle" role="switch" aria-checked="false" tabindex="0"
-         onclick="toggleLiquidGlass()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleLiquidGlass();}">
-        <span class="lt-drop">💧</span>
-        <span class="lt-label">液态玻璃</span>
-        <span class="lt-track"><span class="lt-thumb"></span></span>
+    <!-- ============ 液态玻璃控制面板（开关 + 通透度滑杆） ============ -->
+    <div id="liquid-panel" class="liquid-panel">
+        <div class="liquid-panel-row" id="liquid-toggle" role="switch" aria-checked="false" tabindex="0"
+             onclick="toggleLiquidGlass()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleLiquidGlass();}">
+            <span class="lt-drop">💧</span>
+            <span class="lt-label">液态玻璃</span>
+            <span class="lt-track"><span class="lt-thumb"></span></span>
+        </div>
+        <div class="glass-slider-wrap" id="glass-slider-wrap">
+            <span class="glass-slider-label">通透度</span>
+            <input type="range" id="glass-opacity" min="0" max="100" value="70" aria-label="液态玻璃通透度">
+            <span class="glass-slider-val" id="glass-slider-val">70</span>
+        </div>
     </div>
+
+    <!-- ============ 手指光晕（按玻璃元素时跟随手指） ============ -->
+    <div id="finger-glow" class="finger-glow" aria-hidden="true"></div>
 
     <!-- 音频元素 -->
     <audio id="mixue-audio" loop>
