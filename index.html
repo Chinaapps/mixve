@@ -13,10 +13,14 @@
     <div id="home-page" class="page active">
         <!-- 顶部状态栏 -->
         <div class="status-bar">
-            <span class="time">9:41</span>
+            <span class="time" id="live-time">00:00</span>
             <div class="status-icons">
-                <span>📶</span>
-                <span>🔋</span>
+                <span class="status-svg">
+                    <svg width="16" height="12" viewBox="0 0 16 12"><rect x="0" y="7" width="3" height="5" rx="0.6" fill="currentColor"/><rect x="4.5" y="4.5" width="3" height="7.5" rx="0.6" fill="currentColor"/><rect x="9" y="2" width="3" height="10" rx="0.6" fill="currentColor"/><rect x="13.5" y="0" width="3" height="12" rx="0.6" fill="currentColor"/></svg>
+                </span>
+                <span class="status-svg">
+                    <svg width="24" height="12" viewBox="0 0 24 12"><rect x="0.5" y="0.5" width="19.5" height="11" rx="3.2" fill="none" stroke="currentColor" stroke-width="1"/><rect x="2" y="2" width="13" height="8" rx="2" fill="currentColor"/><rect x="21.5" y="3.5" width="2" height="5" rx="1" fill="currentColor"/></svg>
+                </span>
             </div>
         </div>
 
@@ -30,13 +34,17 @@
                 </div>
             </div>
             <div class="header-right">
-                <span class="search-icon">🔍</span>
+                <span class="settings-icon" onclick="openSettings()" aria-label="设置" role="button">
+                    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3.1"/><path d="M19.2 12a7.2 7.2 0 0 0-.16-1.5l2-1.6-2-3.3-2.3.95a7.2 7.2 0 0 0-2.3-1.4L13.9 3h-3.8l-.3 2.5a7.2 7.2 0 0 0-2.3 1.4l-2.3-.95-2 3.3 2 1.6A7.2 7.2 0 0 0 5.3 12c0 .5.05 1 .15 1.5l-2 1.6 2 3.3 2.3-.95a7.2 7.2 0 0 0 2.3 1.4l.3 2.5h3.8l.3-2.5a7.2 7.2 0 0 0 2.3-1.4l2.3.95 2-3.3-2-1.6c.1-.5.15-1 .15-1.5z"/></svg>
+                </span>
             </div>
         </div>
 
         <!-- 搜索栏 -->
         <div class="search-bar">
-            <span class="search-icon-small">🔍</span>
+            <span class="search-icon-small">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            </span>
             <input type="text" placeholder="搜索商品" readonly>
         </div>
 
@@ -55,26 +63,34 @@
         <!-- 分类导航 -->
         <div class="category-nav">
             <div class="category-item active">
-                <span class="cat-icon">🧋</span>
+                <span class="cat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 8h14l-1.1 12a2 2 0 0 1-2 1.8H8.1a2 2 0 0 1-2-1.8L5 8z"/><path d="M8 8V5a4 4 0 0 1 8 0v3"/><path d="M10.5 12.5h3"/></svg>
+                </span>
                 <span class="cat-name">招牌奶茶</span>
             </div>
             <div class="category-item">
-                <span class="cat-icon">🍦</span>
+                <span class="cat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 8a6 6 0 0 1 12 0"/><path d="M7.6 8.4 6.3 20a1.5 1.5 0 0 0 1.5 1.7h8.4a1.5 1.5 0 0 0 1.5-1.7L16.4 8.4"/><path d="M8 9.5h8"/></svg>
+                </span>
                 <span class="cat-name">冰淇淋</span>
             </div>
             <div class="category-item">
-                <span class="cat-icon">🍹</span>
+                <span class="cat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9h12l-.9 11a2 2 0 0 1-2 1.7H8.9a2 2 0 0 1-2-1.7L6 9z"/><circle cx="12" cy="13.5" r="2.7"/><path d="M9.5 5.5 8 3M14.5 5.5 16 3"/></svg>
+                </span>
                 <span class="cat-name">鲜果茶</span>
             </div>
             <div class="category-item">
-                <span class="cat-icon">🍟</span>
+                <span class="cat-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 10h12l-1.5 9a1.5 1.5 0 0 1-1.5 1.3H9a1.5 1.5 0 0 1-1.5-1.3L6 10z"/><path d="M9 10V6a3 3 0 0 1 6 0v4"/><path d="M8 14h8M8 17.5h8"/></svg>
+                </span>
                 <span class="cat-name">小零食</span>
             </div>
         </div>
 
         <!-- 超级醒目的珍珠奶茶 -->
         <div class="super-product" onclick="openProductDetail()">
-            <div class="super-badge">🔥 限时特惠</div>
+            <div class="super-badge">限时特惠</div>
             <div class="super-product-img-wrap">
                 <img src="assets/images/zhenzhu_naicha.jpg" alt="珍珠奶茶" class="super-product-img">
             </div>
@@ -155,6 +171,48 @@
                     </div>
                 </div>
             </div>
+
+            <div class="product-card" onclick="openNormalProduct('冰鲜柠檬水', 4, 'assets/images/bingxian_ningmeng.jpg')">
+                <div class="product-img-wrap">
+                    <img src="assets/images/bingxian_ningmeng.jpg" alt="冰鲜柠檬水" class="product-img">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">冰鲜柠檬水</h3>
+                    <p class="product-desc">鲜切柠檬 · 冰爽解渴</p>
+                    <div class="product-price-row">
+                        <span class="product-price">¥4</span>
+                        <button class="add-cart-btn" onclick="event.stopPropagation(); addToCart('冰鲜柠檬水', 4, 'assets/images/bingxian_ningmeng.jpg')">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" onclick="openNormalProduct('满杯百香果', 7, 'assets/images/manbei_baixiangguo.jpg')">
+                <div class="product-img-wrap">
+                    <img src="assets/images/manbei_baixiangguo.jpg" alt="满杯百香果" class="product-img">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">满杯百香果</h3>
+                    <p class="product-desc">果肉满满 · 酸甜清爽</p>
+                    <div class="product-price-row">
+                        <span class="product-price">¥7</span>
+                        <button class="add-cart-btn" onclick="event.stopPropagation(); addToCart('满杯百香果', 7, 'assets/images/manbei_baixiangguo.jpg')">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" onclick="openNormalProduct('香芋奶茶', 8, 'assets/images/xiangyu_naicha.jpg')">
+                <div class="product-img-wrap">
+                    <img src="assets/images/xiangyu_naicha.jpg" alt="香芋奶茶" class="product-img">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">香芋奶茶</h3>
+                    <p class="product-desc">绵密香芋 · 浓郁奶香</p>
+                    <div class="product-price-row">
+                        <span class="product-price">¥8</span>
+                        <button class="add-cart-btn" onclick="event.stopPropagation(); addToCart('香芋奶茶', 8, 'assets/images/xiangyu_naicha.jpg')">+</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="bottom-space"></div>
@@ -224,10 +282,10 @@
         </div>
 
         <div class="song-lyrics">
-            <p class="lyric-line">🎵 你爱我 我爱你 🎵</p>
-            <p class="lyric-line">🎵 蜜雪冰城甜蜜蜜 🎵</p>
-            <p class="lyric-line">🎵 你爱我 我爱你 🎵</p>
-            <p class="lyric-line">🎵 蜜雪冰城甜蜜蜜 🎵</p>
+            <p class="lyric-line">你爱我 我爱你</p>
+            <p class="lyric-line">蜜雪冰城甜蜜蜜</p>
+            <p class="lyric-line">你爱我 我爱你</p>
+            <p class="lyric-line">蜜雪冰城甜蜜蜜</p>
         </div>
 
         <div class="detail-img-wrap">
@@ -276,7 +334,9 @@
 
         <div class="detail-bottom-bar">
             <div class="bottom-cart" onclick="closeProductDetail()">
-                <span class="bottom-cart-icon">🛒</span>
+                <span class="bottom-cart-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="9" cy="20" r="1.6"/><circle cx="17" cy="20" r="1.6"/><path d="M3 4h2l2.6 11.2a1.6 1.6 0 0 0 1.6 1.3h8.2a1.6 1.6 0 0 0 1.6-1.3L21 8H6"/></svg>
+                </span>
                 <span class="bottom-cart-text">购物车</span>
             </div>
             <button class="buy-now-btn" onclick="goToPayment('珍珠奶茶', 0.1)">立即购买</button>
@@ -318,7 +378,9 @@
 
         <div class="detail-bottom-bar">
             <div class="bottom-cart" onclick="closeNormalProduct()">
-                <span class="bottom-cart-icon">🛒</span>
+                <span class="bottom-cart-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="9" cy="20" r="1.6"/><circle cx="17" cy="20" r="1.6"/><path d="M3 4h2l2.6 11.2a1.6 1.6 0 0 0 1.6 1.3h8.2a1.6 1.6 0 0 0 1.6-1.3L21 8H6"/></svg>
+                </span>
                 <span class="bottom-cart-text">购物车</span>
             </div>
             <button class="buy-now-btn" id="normal-buy-btn">立即购买</button>
@@ -334,7 +396,9 @@
         </div>
 
         <div class="cart-empty" id="cart-empty">
-            <div class="empty-icon">🛒</div>
+            <div class="empty-icon">
+                <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="9" cy="20" r="1.7"/><circle cx="17" cy="20" r="1.7"/><path d="M3 4h2l2.6 11.2a1.6 1.6 0 0 0 1.6 1.3h8.2a1.6 1.6 0 0 0 1.6-1.3L21 8H6"/></svg>
+            </div>
             <p class="empty-text">购物车还是空的</p>
             <p class="empty-desc">去挑选喜欢的商品吧~</p>
         </div>
@@ -370,10 +434,10 @@
         </div>
 
         <div class="profile-menu">
-            <div class="menu-item"><span class="menu-icon">📍</span><span class="menu-text">收货地址</span><span class="menu-arrow">›</span></div>
-            <div class="menu-item"><span class="menu-icon">🎧</span><span class="menu-text">联系客服</span><span class="menu-arrow">›</span></div>
-            <div class="menu-item"><span class="menu-icon">ℹ️</span><span class="menu-text">关于我们</span><span class="menu-arrow">›</span></div>
-            <div class="menu-item"><span class="menu-icon">⚙️</span><span class="menu-text">设置</span><span class="menu-arrow">›</span></div>
+            <div class="menu-item"><span class="menu-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-6.1 7-11a7 7 0 0 0-14 0c0 4.9 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg></span><span class="menu-text">收货地址</span><span class="menu-arrow">›</span></div>
+            <div class="menu-item"><span class="menu-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/><path d="M18.5 19.5a2.5 2.5 0 0 1-2.5 2.2h-1.2"/></svg></span><span class="menu-text">联系客服</span><span class="menu-arrow">›</span></div>
+            <div class="menu-item"><span class="menu-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.01"/></svg></span><span class="menu-text">关于我们</span><span class="menu-arrow">›</span></div>
+            <div class="menu-item" onclick="openSettings()"><span class="menu-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3.1"/><path d="M19.2 12a7.2 7.2 0 0 0-.16-1.5l2-1.6-2-3.3-2.3.95a7.2 7.2 0 0 0-2.3-1.4L13.9 3h-3.8l-.3 2.5a7.2 7.2 0 0 0-2.3 1.4l-2.3-.95-2 3.3 2 1.6A7.2 7.2 0 0 0 5.3 12c0 .5.05 1 .15 1.5l-2 1.6 2 3.3 2.3-.95a7.2 7.2 0 0 0 2.3 1.4l.3 2.5h3.8l.3-2.5a7.2 7.2 0 0 0 2.3-1.4l2.3.95 2-3.3-2-1.6c.1-.5.15-1 .15-1.5z"/></svg></span><span class="menu-text">设置</span><span class="menu-arrow">›</span></div>
         </div>
 
         <div class="bottom-space"></div>
@@ -388,7 +452,9 @@
         </div>
 
         <div class="address-card">
-            <div class="address-icon">📍</div>
+            <div class="address-icon">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-6.1 7-11a7 7 0 0 0-14 0c0 4.9 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>
+            </div>
             <div class="address-info">
                 <div class="address-user">
                     <span class="user-name">蜜雪粉丝</span>
@@ -474,7 +540,7 @@
                 <div class="pay-info-row">
                     <span class="pay-info-label">付款方式</span>
                     <span class="pay-info-value">
-                        <span class="wechat-balance-icon">💚</span>
+                        <span class="balance-dot"></span>
                         零钱
                         <span class="pay-arrow">›</span>
                     </span>
@@ -555,7 +621,7 @@
 
         <div class="success-snowking">
             <img src="assets/images/xuewang.jpg" alt="雪王" class="success-snowking-img">
-            <p class="success-slogan">你爱我 我爱你 蜜雪冰城甜蜜蜜 ❤️</p>
+            <p class="success-slogan">你爱我 我爱你 蜜雪冰城甜蜜蜜</p>
         </div>
     </div>
 
@@ -576,38 +642,64 @@
     <div class="bottom-nav" id="main-nav">
         <div class="nav-knob" id="nav-knob"></div>
         <div class="nav-item tab-item active" data-tab="0">
-            <span class="nav-icon">🏠</span>
+            <span class="nav-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1v-9.5z"/></svg>
+            </span>
             <span class="nav-text">首页</span>
         </div>
         <div class="nav-item tab-item" data-tab="1">
-            <span class="nav-icon">📋</span>
+            <span class="nav-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4a3 3 0 0 1 6 0"/><path d="M9 10h6M9 14h4"/></svg>
+            </span>
             <span class="nav-text">订单</span>
         </div>
         <div class="nav-item tab-item cart-nav" data-tab="2">
             <div class="cart-icon-wrap">
-                <span class="nav-icon cart-icon">🛒</span>
+                <span class="nav-icon cart-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="9" cy="20" r="1.6"/><circle cx="17" cy="20" r="1.6"/><path d="M3 4h2l2.6 11.2a1.6 1.6 0 0 0 1.6 1.3h8.2a1.6 1.6 0 0 0 1.6-1.3L21 8H6"/></svg>
+                </span>
                 <span class="cart-badge" id="cart-badge">0</span>
             </div>
             <span class="nav-text">购物车</span>
         </div>
         <div class="nav-item tab-item" data-tab="3">
-            <span class="nav-icon">👤</span>
+            <span class="nav-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg>
+            </span>
             <span class="nav-text">我的</span>
         </div>
     </div>
 
-    <!-- ============ 液态玻璃控制面板（开关 + 通透度滑杆） ============ -->
-    <div id="liquid-panel" class="liquid-panel">
-        <div class="liquid-panel-row" id="liquid-toggle" role="switch" aria-checked="false" tabindex="0"
-             onclick="toggleLiquidGlass()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleLiquidGlass();}">
-            <span class="lt-drop">💧</span>
-            <span class="lt-label">液态玻璃</span>
-            <span class="lt-track"><span class="lt-thumb"></span></span>
-        </div>
-        <div class="glass-slider-wrap" id="glass-slider-wrap">
-            <span class="glass-slider-label">通透度</span>
-            <input type="range" id="glass-opacity" min="0" max="100" value="70" aria-label="液态玻璃通透度">
-            <span class="glass-slider-val" id="glass-slider-val">70</span>
+    <!-- ============ 设置弹窗（收纳：显示模式 + 液态玻璃 + 通透度） ============ -->
+    <div id="settings-modal" class="modal">
+        <div class="settings-panel">
+            <div class="settings-header">
+                <div class="settings-close" onclick="closeSettings()">×</div>
+                <div class="settings-title">设置</div>
+                <div class="settings-empty"></div>
+            </div>
+            <div class="settings-body">
+                <div class="settings-group-title">显示模式</div>
+                <div class="settings-row">
+                    <span class="settings-row-label">外观</span>
+                    <div class="segmented" id="theme-seg">
+                        <button class="seg-btn active" data-mode="light" onclick="setTheme('light')">浅色</button>
+                        <button class="seg-btn" data-mode="dark" onclick="setTheme('dark')">深色</button>
+                    </div>
+                </div>
+
+                <div class="settings-group-title">液态玻璃</div>
+                <div class="settings-row" id="liquid-toggle" role="switch" aria-checked="false" tabindex="0"
+                     onclick="toggleLiquidGlass()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleLiquidGlass();}">
+                    <span class="settings-row-label">液态玻璃</span>
+                    <span class="lt-track"><span class="lt-thumb"></span></span>
+                </div>
+                <div class="glass-slider-wrap" id="glass-slider-wrap">
+                    <span class="glass-slider-label">通透度</span>
+                    <input type="range" id="glass-opacity" min="0" max="100" value="70" aria-label="液态玻璃通透度">
+                    <span class="glass-slider-val" id="glass-slider-val">70</span>
+                </div>
+            </div>
         </div>
     </div>
 

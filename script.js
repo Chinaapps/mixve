@@ -73,13 +73,15 @@ function knobFrame() {
     let busy = true;
 
     if (s.dragging) {
-        // 手指拖动：跟随手指；风阻力让旋钮随速度放大、更通透
+        // 手指按下拖动：旋钮变成玻璃球 —— 立即放大、变非常通透，覆盖下方文字；
+        // 速度（风阻力）越快，玻璃球越大、越通透。
         const nx = clampKnobX(s.pointerNorm);
         s.v = (nx - s.x) * 55;
         s.x = nx;
         const speed = Math.abs(s.v);
-        s.scale = 1 + Math.min(0.7, speed * 0.014);   // 越快越大
-        s.opacity = Math.max(0.35, 1 - speed * 0.014); // 越快越通透
+        const base = 1.30;                                   // 按下即放大
+        s.scale = base + Math.min(0.38, speed * 0.012);       // 越大（最多约 1.68）
+        s.opacity = Math.max(0.26, 0.52 - speed * 0.012);     // 越通透（玻璃球）
         setNavActive(clampKnobX(Math.round(s.x)));
     } else if (s.target !== null) {
         // 手指停止后：弹簧回中 + 空气阻力阻尼，到达最近 tab 再切换页面
@@ -432,6 +434,13 @@ document.addEventListener('DOMContentLoaded', function() {
     LiquidGlass.init();
     initGlassOpacity();
     initFingerGlow();
+    initClock();
+    initTheme();
+});
+
+// 点击设置弹窗背景关闭
+document.getElementById('settings-modal').addEventListener('click', function(e) {
+    if (e.target === this) { closeSettings(); }
 });
 
 // 点击弹窗背景关闭
@@ -624,11 +633,10 @@ const LiquidGlass = (function() {
 
     function enable() {
         if (enabled) return;
-        const panel = document.getElementById('liquid-panel');
         if (!initGL()) {
             // WebGL 不可用：仅保留 CSS 玻璃降级效果
             document.body.classList.add('liquid-glass');
-            setGlassOn(panel);
+            setGlassOn();
             enabled = true;
             return;
         }
@@ -636,7 +644,7 @@ const LiquidGlass = (function() {
         enabled = true;
         startTime = performance.now();
         document.body.classList.add('liquid-glass');
-        setGlassOn(panel);
+        setGlassOn();
         rafId = requestAnimationFrame(frame);
     }
 
@@ -644,7 +652,7 @@ const LiquidGlass = (function() {
         if (!enabled) return;
         enabled = false;
         document.body.classList.remove('liquid-glass');
-        setGlassOff(document.getElementById('liquid-panel'));
+        setGlassOff();
         if (canvas) canvas.style.opacity = 0;
         if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
     }
@@ -688,14 +696,12 @@ function toggleLiquidGlass() {
     }
 }
 
-// 面板开关态
-function setGlassOn(panel) {
-    if (panel) panel.classList.add('on');
+// 开关态（设置在设置弹窗里）
+function setGlassOn() {
     const row = document.getElementById('liquid-toggle');
     if (row) { row.classList.add('on'); row.setAttribute('aria-checked', 'true'); }
 }
-function setGlassOff(panel) {
-    if (panel) panel.classList.remove('on');
+function setGlassOff() {
     const row = document.getElementById('liquid-toggle');
     if (row) { row.classList.remove('on'); row.setAttribute('aria-checked', 'false'); }
 }
@@ -738,4 +744,48 @@ function initFingerGlow() {
     window.addEventListener('pointerup', hide, true);
     window.addEventListener('pointercancel', hide, true);
     window.addEventListener('blur', hide);
+}
+
+// 状态栏时间与现在同步（每分钟刷新，参考 time.is 口径）
+function initClock() {
+    const el = document.getElementById('live-time');
+    if (!el) return;
+    function tick() {
+        const d = new Date();
+        const hh = String(d.getHours()).padStart(2, '0');
+        const mm = String(d.getMinutes()).padStart(2, '0');
+        el.textContent = hh + ':' + mm;
+    }
+    tick();
+    setInterval(tick, 1000);   // 每秒校验，分钟精确翻转
+}
+
+// 设置弹窗开关
+function openSettings() {
+    const m = document.getElementById('settings-modal');
+    if (!m) return;
+    m.classList.add('show');
+    syncThemeSeg();
+}
+function closeSettings() {
+    const m = document.getElementById('settings-modal');
+    if (m) m.classList.remove('show');
+}
+
+// 显示模式：浅色 / 深色（手动切换，不跟随系统；默认浅色）
+function applyTheme(mode) {
+    document.body.classList.toggle('dark', mode === 'dark');
+    document.querySelectorAll('#theme-seg .seg-btn').forEach(function(b) {
+        b.classList.toggle('active', b.dataset.mode === mode);
+    });
+}
+function setTheme(mode) { applyTheme(mode); localStorage.setItem('mixve-theme', mode); }
+function syncThemeSeg() {
+    const mode = document.body.classList.contains('dark') ? 'dark' : 'light';
+    document.querySelectorAll('#theme-seg .seg-btn').forEach(function(b) {
+        b.classList.toggle('active', b.dataset.mode === mode);
+    });
+}
+function initTheme() {
+    applyTheme(localStorage.getItem('mixve-theme') === 'dark' ? 'dark' : 'light');
 }
