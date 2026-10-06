@@ -116,6 +116,20 @@
 
         <!-- 商品列表 -->
         <div class="product-list">
+            <div class="product-card product-wide" onclick="openYingtaoPai()">
+                <div class="product-wide-img-wrap">
+                    <img src="assets/images/yingtao_pai.jpg" alt="安卓的樱桃派" class="product-wide-img">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">安卓的樱桃派</h3>
+                    <p class="product-desc">现烤樱桃派 · 果香浓郁</p>
+                    <div class="product-price-row">
+                        <span class="product-price">¥9</span>
+                        <button class="add-cart-btn" onclick="event.stopPropagation(); addToCart('安卓的樱桃派', 9, 'assets/images/yingtao_pai.jpg')">+</button>
+                    </div>
+                </div>
+            </div>
+
             <div class="product-card" onclick="openNormalProduct('草莓摇摇奶昔', 7, 'assets/images/caomei_naixi.jpg')">
                 <div class="product-img-wrap">
                     <img src="assets/images/caomei_naixi.jpg" alt="草莓摇摇奶昔" class="product-img">
@@ -421,10 +435,27 @@
         <div class="profile-card">
             <img src="assets/images/xuewang.jpg" alt="头像" class="profile-avatar">
             <div class="profile-id">
-                <div class="profile-name">蜜雪粉丝</div>
+                <div class="profile-name" id="profile-name">蜜雪粉丝</div>
                 <div class="profile-phone">138****8888</div>
             </div>
             <span class="profile-vip">黄金会员</span>
+        </div>
+
+        <!-- 登录（仅登录、无注册，任意账号密码均可登录，纯前端演示） -->
+        <div class="login-card" id="login-card">
+            <div class="login-title">登录</div>
+            <input type="text" id="login-user" class="login-input" placeholder="请输入用户名" autocomplete="off">
+            <input type="password" id="login-pass" class="login-input" placeholder="请输入密码" autocomplete="off">
+            <button class="login-btn" onclick="doLogin()">登录</button>
+            <div class="login-hint">任意用户名与密码均可登录（演示）</div>
+        </div>
+
+        <div class="logged-card" id="logged-card" style="display:none">
+            <div class="logged-row">
+                <span class="logged-label">已登录</span>
+                <b class="logged-name" id="logged-name"></b>
+            </div>
+            <button class="logout-btn" onclick="doLogout()">退出登录</button>
         </div>
 
         <div class="profile-stats">
@@ -679,6 +710,20 @@
                 <div class="settings-empty"></div>
             </div>
             <div class="settings-body">
+                <!-- 玻璃通透度演示 -->
+                <div class="glass-demo">
+                    <span class="glass-demo-label">玻璃通透度演示</span>
+                    <div class="glass-demo-card" id="glass-demo-card">
+                        <div class="glass-demo-bg">
+                            <span class="gd-dot gd1"></span>
+                            <span class="gd-dot gd2"></span>
+                            <span class="gd-dot gd3"></span>
+                            <span class="gd-text">蜜雪</span>
+                        </div>
+                        <div class="glass-demo-pane"></div>
+                    </div>
+                </div>
+
                 <div class="settings-group-title">显示模式</div>
                 <div class="settings-row">
                     <span class="settings-row-label">外观</span>
@@ -699,6 +744,11 @@
                     <input type="range" id="glass-opacity" min="0" max="100" value="70" aria-label="液态玻璃通透度">
                     <span class="glass-slider-val" id="glass-slider-val">70</span>
                 </div>
+
+                <!-- 更多玩法 -->
+                <a class="more-link" href="https://link3.cc/zhuniuwebs" target="_blank" rel="noopener">
+                    更多玩法请访问 <span>link3.cc/zhuniuwebs</span> →
+                </a>
             </div>
         </div>
     </div>
@@ -709,6 +759,9 @@
     <!-- 音频元素 -->
     <audio id="mixue-audio" loop>
         <source src="assets/audio/mixue_song.wav" type="audio/wav">
+    </audio>
+    <audio id="yingtao-audio" loop>
+        <source src="assets/audio/mzaf_15225429478576052068.plus.aac.p.m4a" type="audio/mp4">
     </audio>
 
     <script src="script.js"></script>

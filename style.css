@@ -342,6 +342,18 @@ body {
 .product-price-row { display: flex; align-items: center; justify-content: space-between; }
 .product-price { font-size: 18px; font-weight: 800; color: var(--brand); }
 
+/* 宽图商品卡（樱桃派）：图片完整展示，不挤压文字 */
+.product-card.product-wide { flex-direction: column; }
+.product-wide-img-wrap {
+    width: 100%;
+    aspect-ratio: 763 / 445;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff5f0;
+}
+.product-wide-img { width: 100%; height: 100%; object-fit: contain; }
+.product-wide .product-info { width: 100%; margin-top: 10px; }
+
 .add-cart-btn {
     width: 28px; height: 28px;
     border-radius: 50%;
@@ -393,13 +405,13 @@ body {
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0.28));
-    backdrop-filter: blur(5px) saturate(150%);
-    -webkit-backdrop-filter: blur(5px) saturate(150%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.12));
+    backdrop-filter: blur(4px) saturate(150%);
+    -webkit-backdrop-filter: blur(4px) saturate(150%);
     box-shadow:
-        0 3px 12px rgba(43, 43, 53, 0.12),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.6),
-        inset 0 -5px 10px rgba(255, 255, 255, 0.45);
+        0 3px 12px rgba(43, 43, 53, 0.1),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.45),
+        inset 0 -5px 10px rgba(255, 255, 255, 0.3);
     will-change: transform;
     z-index: 0;
     pointer-events: none;
@@ -897,6 +909,111 @@ body {
 }
 .seg-btn.active { background: #fff; color: var(--brand); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); }
 
+/* 玻璃通透度演示（设置页顶部，随 --glass-alpha/blur 实时变化） */
+.glass-demo { margin: 12px 0 4px; }
+.glass-demo-label { font-size: 12px; font-weight: 700; color: var(--ink-mute); margin-bottom: 8px; display: block; }
+.glass-demo-card {
+    position: relative;
+    width: 100%; height: 92px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+.glass-demo-bg {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: space-around;
+    background: linear-gradient(135deg, #ffd194, #f0a, #8ec5fc, #7bff8c);
+    padding: 0 22px;
+}
+.gd-dot {
+    width: 26px; height: 26px; border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.gd1 { background: #ff6b35; }
+.gd2 { background: #07c160; }
+.gd3 { background: #4a90e2; }
+.gd-text { font-size: 20px; font-weight: 800; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+.glass-demo-pane {
+    position: absolute; inset: 0;
+    background: rgba(255, 255, 255, var(--glass-alpha));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+}
+
+/* 更多玩法链接（设置页底部） */
+.more-link {
+    display: flex; align-items: center; justify-content: center;
+    gap: 6px;
+    margin: 18px 0 4px;
+    padding: 12px;
+    font-size: 13px; font-weight: 700;
+    color: var(--brand);
+    background: rgba(255, 107, 53, 0.08);
+    border: 1px dashed rgba(255, 107, 53, 0.4);
+    border-radius: 12px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+.more-link:active { background: rgba(255, 107, 53, 0.18); }
+.more-link span { color: var(--brand); text-decoration: underline; }
+
+/* ---------------- 我的页登录 ---------------- */
+.login-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 16px;
+    margin: 12px 0;
+    box-shadow: var(--shadow-sm);
+}
+.login-title { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 12px; }
+.login-input {
+    width: 100%;
+    height: 44px;
+    padding: 0 14px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(43, 43, 53, 0.12);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+.login-input:focus { border-color: var(--brand); }
+.login-btn {
+    width: 100%; height: 46px;
+    border: none; border-radius: 12px;
+    background: linear-gradient(90deg, var(--brand), var(--brand-deep));
+    color: #fff; font-size: 15px; font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.25);
+}
+.login-btn:active { transform: scale(0.98); }
+.login-hint { font-size: 11px; color: var(--ink-mute); text-align: center; margin-top: 10px; }
+
+.logged-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 16px;
+    margin: 12px 0;
+    box-shadow: var(--shadow-sm);
+}
+.logged-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.logged-label { font-size: 13px; color: var(--ink-soft); }
+.logged-name { font-size: 15px; font-weight: 700; color: var(--brand); max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.logout-btn {
+    width: 100%; height: 42px;
+    border: 1px solid rgba(255, 71, 87, 0.4);
+    border-radius: 12px;
+    background: transparent;
+    color: var(--brand-deep);
+    font-size: 14px; font-weight: 700;
+    cursor: pointer;
+}
+
 /* 液态玻璃开关（设置内） */
 .lt-track {
     position: relative;
@@ -1342,3 +1459,23 @@ body.dark.liquid-glass :is(
 ) {
     background: rgba(40, 38, 50, var(--glass-alpha));
 }
+
+/* 深色下新组件适配 */
+body.dark .login-card,
+body.dark .logged-card {
+    background: rgba(32, 30, 40, 0.85);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+body.dark .login-title { color: #f2f0f8; }
+body.dark .login-input {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #f2f0f8;
+}
+body.dark .login-input::placeholder { color: #b4b0c2; }
+body.dark .login-hint { color: #b4b0c2; }
+body.dark .more-link { color: var(--brand); background: rgba(255, 107, 53, 0.14); }
+body.dark .more-link span { color: var(--brand); }
+body.dark .glass-demo-label { color: #b4b0c2; }
+body.dark .glass-demo-card { border-color: rgba(255, 255, 255, 0.2); }
+body.dark .logged-label { color: #b4b0c2; }

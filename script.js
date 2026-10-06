@@ -16,6 +16,8 @@ let currentProduct = {
 // 音频元素
 const mixueAudio = document.getElementById('mixue-audio');
 mixueAudio.volume = 1.0;
+const yingtaoAudio = document.getElementById('yingtao-audio');
+yingtaoAudio.volume = 1.0;
 
 // ---------------- 页面切换函数 ----------------
 function showPage(pageId) {
@@ -53,7 +55,13 @@ const knobState = {
     target: null, dragging: false, pointerNorm: 0, raf: 0
 };
 
+// 液态玻璃通透度（0~1），旋钮透明度与其联动
+let glassT = 0.7;
+
 function clampKnobX(x) { return Math.max(0, Math.min(KNOB_COUNT - 1, x)); }
+
+// 旋钮静止时透明度（与液态玻璃通透度联动：越通透旋钮越透明）
+function knobIdleOpacity() { return Math.max(0.28, 0.55 - 0.25 * glassT); }
 
 // 将旋钮状态绘制到 DOM（位移 + 缩放 + 通透度 + 高亮）
 function applyKnob() {
@@ -74,14 +82,15 @@ function knobFrame() {
 
     if (s.dragging) {
         // 手指按下拖动：旋钮变成玻璃球 —— 立即放大、变非常通透，覆盖下方文字；
-        // 速度（风阻力）越快，玻璃球越大、越通透。
+        // 速度（风阻力）越快玻璃球越大；通透度再乘上全局通透度（更透）。
         const nx = clampKnobX(s.pointerNorm);
         s.v = (nx - s.x) * 55;
         s.x = nx;
         const speed = Math.abs(s.v);
         const base = 1.30;                                   // 按下即放大
         s.scale = base + Math.min(0.38, speed * 0.012);       // 越大（最多约 1.68）
-        s.opacity = Math.max(0.26, 0.52 - speed * 0.012);     // 越通透（玻璃球）
+        const dragOp = (0.34 - 0.12 * glassT) - speed * 0.012;
+        s.opacity = Math.max(0.16, dragOp);                   // 越通透（玻璃球）
         setNavActive(clampKnobX(Math.round(s.x)));
     } else if (s.target !== null) {
         // 手指停止后：弹簧回中 + 空气阻力阻尼，到达最近 tab 再切换页面
@@ -89,7 +98,7 @@ function knobFrame() {
         s.v *= 0.80;
         s.x += s.v;
         s.scale += (1 - s.scale) * 0.18;
-        s.opacity += (1 - s.opacity) * 0.18;
+        s.opacity += (knobIdleOpacity() - s.opacity) * 0.18;
         if (Math.abs(s.target - s.x) < 0.006 && Math.abs(s.v) < 0.02) {
             const idx = clampKnobX(Math.round(s.target));
             s.target = null; s.v = 0; s.x = idx;
@@ -99,11 +108,12 @@ function knobFrame() {
             return;
         }
     } else {
-        // 静止：恢复大小与通透度
+        // 静止：恢复大小，透明度回落到当前通透度对应的基线
         s.scale += (1 - s.scale) * 0.15;
-        s.opacity += (1 - s.opacity) * 0.15;
-        busy = !(Math.abs(1 - s.scale) < 0.005 && Math.abs(1 - s.opacity) < 0.005);
-        if (!busy) { s.scale = 1; s.opacity = 1; }
+        s.opacity += (knobIdleOpacity() - s.opacity) * 0.15;
+        const idleOp = knobIdleOpacity();
+        busy = !(Math.abs(1 - s.scale) < 0.005 && Math.abs(idleOp - s.opacity) < 0.005);
+        if (!busy) { s.scale = 1; s.opacity = idleOp; }
     }
 
     applyKnob();
@@ -259,7 +269,37 @@ function openNormalProduct(name, price, img) {
     showPage('normal-detail-page');
 }
 
-function closeNormalProduct() { showPage('home-page'); }
+function closeNormalProduct() { stopYingtaoSong(); showPage('home-page'); }
+
+// ---------------- 安卓的樱桃派（复用珍珠奶茶的播放音乐逻辑） ----------------
+function playYingtaoSong() {
+    stopMixueSong();
+    try {
+        yingtaoAudio.currentTime = 0;
+        yingtaoAudio.volume = 1.0;
+        yingtaoAudio.play().catch(e => {
+            console.log('音频播放需要用户交互', e);
+            document.addEventListener('click', function playOnce() {
+                yingtaoAudio.play().catch(() => {});
+                document.removeEventListener('click', playOnce);
+            }, { once: true });
+        });
+    } catch (e) {
+        console.log('音频播放错误', e);
+    }
+}
+function stopYingtaoSong() {
+    try {
+        yingtaoAudio.pause();
+        yingtaoAudio.currentTime = 0;
+    } catch (e) {
+        console.log('音频停止错误', e);
+    }
+}
+function openYingtaoPai() {
+    openNormalProduct('安卓的樱桃派', 9, 'assets/images/yingtao_pai.jpg');
+    playYingtaoSong();   // 复用珍珠奶茶的音乐播放代码，播放樱桃派音频
+}
 
 // ---------------- 购物车 ----------------
 function openCart() { updateCartUI(); switchTab(2); }
@@ -343,6 +383,7 @@ function goToPayment(name, price, img) {
     document.getElementById('payment-total-price').textContent = price.toFixed(2);
 
     stopMixueSong();
+    stopYingtaoSong();
     showPage('payment-page');
 }
 
@@ -436,6 +477,11 @@ document.addEventListener('DOMContentLoaded', function() {
     initFingerGlow();
     initClock();
     initTheme();
+    initLogin();
+
+    // 密码框回车触发登录
+    const lp = document.getElementById('login-pass');
+    if (lp) lp.addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
 });
 
 // 点击设置弹窗背景关闭
@@ -713,9 +759,15 @@ function initGlassOpacity() {
     const val = document.getElementById('glass-slider-val');
     function apply(v) {
         const t = Number(v) / 100;
+        glassT = t;
         document.body.style.setProperty('--glass-alpha', (0.55 - 0.45 * t).toFixed(3));
         document.body.style.setProperty('--glass-blur', (26 - 22 * t).toFixed(1) + 'px');
         if (val) val.textContent = v;
+        // 旋钮透明度随通透度联动
+        if (!knobState.dragging && knobState.target === null) {
+            knobState.opacity = knobIdleOpacity();
+            applyKnob();
+        }
     }
     slider.addEventListener('input', function() {
         apply(slider.value);
@@ -788,4 +840,35 @@ function syncThemeSeg() {
 }
 function initTheme() {
     applyTheme(localStorage.getItem('mixve-theme') === 'dark' ? 'dark' : 'light');
+}
+
+// ---------------- 我的页登录（纯前端演示：仅登录、无注册，任意账号密码成功） ----------------
+function doLogin() {
+    const nameInput = document.getElementById('login-user');
+    const passInput = document.getElementById('login-pass');
+    const user = (nameInput && nameInput.value.trim()) || '蜜雪粉丝';
+    localStorage.setItem('mixve-user', user);
+    setLoggedInUI(user);
+}
+function doLogout() {
+    localStorage.removeItem('mixve-user');
+    setLoggedInUI(null);
+}
+function setLoggedInUI(user) {
+    const logged = !!user;
+    const lc = document.getElementById('login-card');
+    const gc = document.getElementById('logged-card');
+    const pn = document.getElementById('profile-name');
+    if (lc) lc.style.display = logged ? 'none' : 'block';
+    if (gc) gc.style.display = logged ? 'block' : 'none';
+    if (logged) {
+        const nm = document.getElementById('logged-name');
+        if (nm) nm.textContent = user;
+        if (pn) pn.textContent = user;
+    } else if (pn) {
+        pn.textContent = '蜜雪粉丝';
+    }
+}
+function initLogin() {
+    setLoggedInUI(localStorage.getItem('mixve-user'));
 }
