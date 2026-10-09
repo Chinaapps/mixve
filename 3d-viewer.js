@@ -9,16 +9,27 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 let zViewer = null;
 
-// FBX 里引用的贴图文件不在项目里时，去掉坏贴图，改用材质本身的颜色渲染（避免全黑）
+// FBX 里引用的贴图文件不在项目里时，去掉坏贴图，并给材质换成豚鼠的暖棕奶茶色（避免全黑或生石灰白）
 function fixBrokenTextures(m) {
-    if (!m || m.type === 'MeshBasicMaterial') return;
+    if (!m || m.type === 'MeshBasicMaterial') return false;
+    let broken = false;
     ['map', 'emissiveMap', 'bumpMap', 'normalMap', 'specularMap', 'alphaMap', 'aoMap', 'lightMap'].forEach(function (k) {
         const t = m[k];
         if (t && (!t.image || !t.image.width || t.image.naturalWidth === 0)) {
             m[k] = null;
             m.needsUpdate = true;
+            broken = true;
         }
     });
+    if (broken && m.color) {
+        // 暖棕/奶茶色（豚鼠毛色），带哑光质感
+        m.color.setHex(0xa97c50);
+        if (m.specular) m.specular.setHex(0x554433);
+        if (m.shininess !== undefined) m.shininess = 12;
+        if ('roughness' in m) m.roughness = 0.85;
+        m.needsUpdate = true;
+    }
+    return broken;
 }
 
 window.initZhuniuViewer = async function (containerId) {
@@ -53,11 +64,11 @@ window.initZhuniuViewer = async function (containerId) {
         pmrem.dispose();
     } catch (e) { /* 环境光失败不阻塞 */ }
 
-    // 多级打光：环境光 + 半球光 + 双方向光，确保模型不黑
-    scene.add(new THREE.AmbientLight(0xffffff, 0.55));
-    scene.add(new THREE.HemisphereLight(0xffffff, 0x9a9a9a, 1.5));
-    const dl = new THREE.DirectionalLight(0xffffff, 1.7); dl.position.set(3, 5, 2); scene.add(dl);
-    const dl2 = new THREE.DirectionalLight(0xffffff, 0.7); dl2.position.set(-3, 2, -2); scene.add(dl2);
+    // 多级打光：环境光 + 半球光 + 双方向光（中间档：不过曝、不发黑）
+    scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+    scene.add(new THREE.HemisphereLight(0xfff2e8, 0x9a8a7a, 1.1));
+    const dl = new THREE.DirectionalLight(0xffffff, 1.35); dl.position.set(3, 5, 2); scene.add(dl);
+    const dl2 = new THREE.DirectionalLight(0xffd9c0, 0.55); dl2.position.set(-3, 2, -2); scene.add(dl2);
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
