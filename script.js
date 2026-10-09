@@ -21,13 +21,20 @@ yingtaoAudio.volume = 1.0;
 const zhuniuAudio = document.getElementById('zhuniu-audio');
 zhuniuAudio.volume = 1.0;
 
+// 各 tab 页的滚动位置记忆
+const scrollMemory = {};
+
 // ---------------- 页面切换函数 ----------------
 function showPage(pageId) {
+    // 先记录当前页面切走时的滚动位置
+    const curActive = document.querySelector('.page.active');
+    if (curActive && curActive.id && TAB_INDEX[curActive.id] !== undefined) {
+        scrollMemory[curActive.id] = window.scrollY;
+    }
     document.querySelectorAll('.page').forEach(page => {
         page.classList.remove('active');
     });
     document.getElementById(pageId).classList.add('active');
-    window.scrollTo(0, 0);
 
     // tab 页显示全局底部栏；详情/支付/成功等全屏页隐藏
     const idx = TAB_INDEX[pageId];
@@ -35,8 +42,13 @@ function showPage(pageId) {
         document.body.classList.remove('no-tab-nav');
         currentTab = idx;
         setNavActive(idx);
+        // tab 页切回来时恢复上次滚动位置（详情页仍从顶部开始）
+        requestAnimationFrame(function() {
+            window.scrollTo(0, scrollMemory[pageId] || 0);
+        });
     } else {
         document.body.classList.add('no-tab-nav');
+        window.scrollTo(0, 0);
     }
     updateCartSettle();
 }
@@ -527,11 +539,6 @@ document.addEventListener('DOMContentLoaded', function() {
     initFingerGlow();
     initClock();
     initTheme();
-    initLogin();
-
-    // 密码框回车触发登录
-    const lp = document.getElementById('login-pass');
-    if (lp) lp.addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
 });
 
 // 点击设置弹窗背景关闭
@@ -890,35 +897,4 @@ function syncThemeSeg() {
 }
 function initTheme() {
     applyTheme(localStorage.getItem('mixve-theme') === 'dark' ? 'dark' : 'light');
-}
-
-// ---------------- 我的页登录（纯前端演示：仅登录、无注册，任意账号密码成功） ----------------
-function doLogin() {
-    const nameInput = document.getElementById('login-user');
-    const passInput = document.getElementById('login-pass');
-    const user = (nameInput && nameInput.value.trim()) || '蜜雪粉丝';
-    localStorage.setItem('mixve-user', user);
-    setLoggedInUI(user);
-}
-function doLogout() {
-    localStorage.removeItem('mixve-user');
-    setLoggedInUI(null);
-}
-function setLoggedInUI(user) {
-    const logged = !!user;
-    const lc = document.getElementById('login-card');
-    const gc = document.getElementById('logged-card');
-    const pn = document.getElementById('profile-name');
-    if (lc) lc.style.display = logged ? 'none' : 'block';
-    if (gc) gc.style.display = logged ? 'block' : 'none';
-    if (logged) {
-        const nm = document.getElementById('logged-name');
-        if (nm) nm.textContent = user;
-        if (pn) pn.textContent = user;
-    } else if (pn) {
-        pn.textContent = '蜜雪粉丝';
-    }
-}
-function initLogin() {
-    setLoggedInUI(localStorage.getItem('mixve-user'));
 }

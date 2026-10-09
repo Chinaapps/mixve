@@ -5,8 +5,21 @@
 import * as THREE from 'three';
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 let zViewer = null;
+
+// FBX 里引用的贴图文件不在项目里时，去掉坏贴图，改用材质本身的颜色渲染（避免全黑）
+function fixBrokenTextures(m) {
+    if (!m || m.type === 'MeshBasicMaterial') return;
+    ['map', 'emissiveMap', 'bumpMap', 'normalMap', 'specularMap', 'alphaMap', 'aoMap', 'lightMap'].forEach(function (k) {
+        const t = m[k];
+        if (t && (!t.image || !t.image.width || t.image.naturalWidth === 0)) {
+            m[k] = null;
+            m.needsUpdate = true;
+        }
+    });
+}
 
 window.initZhuniuViewer = async function (containerId) {
     disposeZhuniuViewer();
@@ -33,9 +46,18 @@ window.initZhuniuViewer = async function (containerId) {
     camera.position.set(2.4, 1.7, 3.4);
     camera.lookAt(0, 0.5, 0);
 
-    scene.add(new THREE.HemisphereLight(0xffffff, 0x808080, 1.15));
-    const dl = new THREE.DirectionalLight(0xffffff, 1.25); dl.position.set(3, 5, 2); scene.add(dl);
-    const dl2 = new THREE.DirectionalLight(0xffffff, 0.5); dl2.position.set(-3, 2, -2); scene.add(dl2);
+    // 环境光（IBL）让模型更亮更立体
+    try {
+        const pmrem = new THREE.PMREMGenerator(renderer);
+        scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+        pmrem.dispose();
+    } catch (e) { /* 环境光失败不阻塞 */ }
+
+    // 多级打光：环境光 + 半球光 + 双方向光，确保模型不黑
+    scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x9a9a9a, 1.5));
+    const dl = new THREE.DirectionalLight(0xffffff, 1.7); dl.position.set(3, 5, 2); scene.add(dl);
+    const dl2 = new THREE.DirectionalLight(0xffffff, 0.7); dl2.position.set(-3, 2, -2); scene.add(dl2);
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
@@ -50,6 +72,14 @@ window.initZhuniuViewer = async function (containerId) {
     try {
         const loader = new FBXLoader();
         const loaded = await loader.loadAsync('assets/models/zhuniu.fbx');
+
+        // 清理引用失败/缺失的贴图，避免模型渲染成全黑
+        loaded.traverse(function (o) {
+            if (o.isMesh) {
+                const mats = Array.isArray(o.material) ? o.material : [o.material];
+                mats.forEach(fixBrokenTextures);
+            }
+        });
 
         // 归一化缩放（适配预览框）并居中、落在地面上
         const box = new THREE.Box3().setFromObject(loaded);

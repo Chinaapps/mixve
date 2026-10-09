@@ -958,62 +958,6 @@ body {
 .more-link:active { background: rgba(255, 107, 53, 0.18); }
 .more-link span { color: var(--brand); text-decoration: underline; }
 
-/* ---------------- 我的页登录 ---------------- */
-.login-card {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    padding: 16px;
-    margin: 12px 0;
-    box-shadow: var(--shadow-sm);
-}
-.login-title { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 12px; }
-.login-input {
-    width: 100%;
-    height: 44px;
-    padding: 0 14px;
-    margin-bottom: 10px;
-    border: 1px solid rgba(43, 43, 53, 0.12);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.7);
-    font-size: 14px;
-    color: var(--ink);
-    outline: none;
-    transition: border-color 0.2s ease;
-}
-.login-input:focus { border-color: var(--brand); }
-.login-btn {
-    width: 100%; height: 46px;
-    border: none; border-radius: 12px;
-    background: linear-gradient(90deg, var(--brand), var(--brand-deep));
-    color: #fff; font-size: 15px; font-weight: 800;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.25);
-}
-.login-btn:active { transform: scale(0.98); }
-.login-hint { font-size: 11px; color: var(--ink-mute); text-align: center; margin-top: 10px; }
-
-.logged-card {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    padding: 16px;
-    margin: 12px 0;
-    box-shadow: var(--shadow-sm);
-}
-.logged-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.logged-label { font-size: 13px; color: var(--ink-soft); }
-.logged-name { font-size: 15px; font-weight: 700; color: var(--brand); max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.logout-btn {
-    width: 100%; height: 42px;
-    border: 1px solid rgba(255, 71, 87, 0.4);
-    border-radius: 12px;
-    background: transparent;
-    color: var(--brand-deep);
-    font-size: 14px; font-weight: 700;
-    cursor: pointer;
-}
-
 /* 液态玻璃开关（设置内） */
 .lt-track {
     position: relative;
@@ -1461,24 +1405,10 @@ body.dark.liquid-glass :is(
 }
 
 /* 深色下新组件适配 */
-body.dark .login-card,
-body.dark .logged-card {
-    background: rgba(32, 30, 40, 0.85);
-    border-color: rgba(255, 255, 255, 0.1);
-}
-body.dark .login-title { color: #f2f0f8; }
-body.dark .login-input {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.15);
-    color: #f2f0f8;
-}
-body.dark .login-input::placeholder { color: #b4b0c2; }
-body.dark .login-hint { color: #b4b0c2; }
 body.dark .more-link { color: var(--brand); background: rgba(255, 107, 53, 0.14); }
 body.dark .more-link span { color: var(--brand); }
 body.dark .glass-demo-label { color: #b4b0c2; }
 body.dark .glass-demo-card { border-color: rgba(255, 255, 255, 0.2); }
-body.dark .logged-label { color: #b4b0c2; }
 
 /* ---------------- 神秘猪妞 3D 预览器 ---------------- */
 .zhuniu-3d-wrap { margin: 12px 0 2px; }
