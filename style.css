@@ -1479,3 +1479,26 @@ body.dark .more-link span { color: var(--brand); }
 body.dark .glass-demo-label { color: #b4b0c2; }
 body.dark .glass-demo-card { border-color: rgba(255, 255, 255, 0.2); }
 body.dark .logged-label { color: #b4b0c2; }
+
+/* ---------------- 神秘猪妞 3D 预览器 ---------------- */
+.zhuniu-3d-wrap { margin: 12px 0 2px; }
+.zhuniu-3d-title { font-size: 13px; font-weight: 700; color: var(--ink-mute); margin-bottom: 8px; }
+.zhuniu-3d {
+    position: relative;
+    width: 100%; height: 300px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: linear-gradient(160deg, #fde8d8, #ffffff);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: inset 0 0 20px rgba(255, 107, 53, 0.08);
+}
+.zhuniu-3d canvas { display: block; }
+.zhuniu-3d-hint { font-size: 11px; color: var(--ink-mute); text-align: center; margin-top: 6px; }
+.zhuniu-3d-err {
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; height: 100%; font-size: 13px; color: #b54708;
+}
+body.dark .zhuniu-3d { background: linear-gradient(160deg, #2b2733, #17151d); border-color: rgba(255,255,255,0.12); }
+body.dark .zhuniu-3d-err { color: #ff9a6b; }
+body.dark .zhuniu-3d-hint,
+body.dark .zhuniu-3d-title { color: #b4b0c2; }

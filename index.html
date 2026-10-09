@@ -7,6 +7,16 @@
     <meta name="theme-color" content="#ff6b35">
     <title>蜜雪冰城 · 点单模拟</title>
     <link rel="stylesheet" href="style.css">
+    <!-- 3D 预览器依赖（three.js + FBXLoader） -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
+                "fflate": "https://cdn.jsdelivr.net/npm/fflate@0.8.2/esm/browser.js"
+            }
+        }
+    </script>
 </head>
 <body>
     <!-- ============ 首页 ============ -->
@@ -126,6 +136,20 @@
                     <div class="product-price-row">
                         <span class="product-price">¥9</span>
                         <button class="add-cart-btn" onclick="event.stopPropagation(); addToCart('安卓的樱桃派', 9, 'assets/images/yingtao_pai.jpg')">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" onclick="openZhuniu()">
+                <div class="product-img-wrap">
+                    <img src="assets/images/zhuniu_mystery.jpg" alt="神秘猪妞" class="product-img">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">神秘猪妞</h3>
+                    <p class="product-desc">木屑清香 · 毛毛茸茸</p>
+                    <div class="product-price-row">
+                        <span class="product-price">¥8</span>
+                        <button class="add-cart-btn" onclick="event.stopPropagation(); addToCart('神秘猪妞', 8, 'assets/images/zhuniu_mystery.jpg')">+</button>
                     </div>
                 </div>
             </div>
@@ -367,6 +391,13 @@
 
         <div class="detail-img-wrap">
             <img id="normal-detail-img" src="" alt="" class="detail-img">
+        </div>
+
+        <!-- 神秘猪妞 3D 预览器（仅该商品显示） -->
+        <div id="zhuniu-3d-wrap" class="zhuniu-3d-wrap" style="display:none">
+            <div class="zhuniu-3d-title">3D 预览</div>
+            <div id="zhuniu-3d" class="zhuniu-3d"></div>
+            <div class="zhuniu-3d-hint">可拖动旋转 · 自动慢转</div>
         </div>
 
         <div class="detail-info">
@@ -763,7 +794,11 @@
     <audio id="yingtao-audio" loop>
         <source src="assets/audio/mzaf_15225429478576052068.plus.aac.p.m4a" type="audio/mp4">
     </audio>
+    <audio id="zhuniu-audio" loop>
+        <source src="assets/audio/zhaguanmi.mp3" type="audio/mpeg">
+    </audio>
 
     <script src="script.js"></script>
+    <script type="module" src="3d-viewer.js"></script>
 </body>
 </html>

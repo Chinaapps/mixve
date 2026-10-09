@@ -18,6 +18,8 @@ const mixueAudio = document.getElementById('mixue-audio');
 mixueAudio.volume = 1.0;
 const yingtaoAudio = document.getElementById('yingtao-audio');
 yingtaoAudio.volume = 1.0;
+const zhuniuAudio = document.getElementById('zhuniu-audio');
+zhuniuAudio.volume = 1.0;
 
 // ---------------- 页面切换函数 ----------------
 function showPage(pageId) {
@@ -269,7 +271,14 @@ function openNormalProduct(name, price, img) {
     showPage('normal-detail-page');
 }
 
-function closeNormalProduct() { stopYingtaoSong(); showPage('home-page'); }
+function closeNormalProduct() {
+    stopYingtaoSong();
+    stopZhuniuSong();
+    if (window.disposeZhuniuViewer) disposeZhuniuViewer();
+    const wrap = document.getElementById('zhuniu-3d-wrap');
+    if (wrap) wrap.style.display = 'none';
+    showPage('home-page');
+}
 
 // ---------------- 安卓的樱桃派（复用珍珠奶茶的播放音乐逻辑） ----------------
 function playYingtaoSong() {
@@ -299,6 +308,45 @@ function stopYingtaoSong() {
 function openYingtaoPai() {
     openNormalProduct('安卓的樱桃派', 9, 'assets/images/yingtao_pai.jpg');
     playYingtaoSong();   // 复用珍珠奶茶的音乐播放代码，播放樱桃派音频
+}
+
+// ---------------- 神秘猪妞（复用珍珠奶茶的播放音乐逻辑 + 3D 预览器） ----------------
+function playZhuniuSong() {
+    stopMixueSong();
+    try {
+        zhuniuAudio.currentTime = 0;
+        zhuniuAudio.volume = 1.0;
+        zhuniuAudio.play().catch(e => {
+            console.log('音频播放需要用户交互', e);
+            document.addEventListener('click', function playOnce() {
+                zhuniuAudio.play().catch(() => {});
+                document.removeEventListener('click', playOnce);
+            }, { once: true });
+        });
+    } catch (e) {
+        console.log('音频播放错误', e);
+    }
+}
+function stopZhuniuSong() {
+    try {
+        zhuniuAudio.pause();
+        zhuniuAudio.currentTime = 0;
+    } catch (e) {
+        console.log('音频停止错误', e);
+    }
+}
+function openZhuniu() {
+    openNormalProduct('神秘猪妞', 8, 'assets/images/zhuniu_mystery.jpg');
+    // 显示 3D 预览器，预览猪妞绑骨版模型
+    const wrap = document.getElementById('zhuniu-3d-wrap');
+    if (wrap) {
+        wrap.style.display = 'block';
+        // 等布局就绪后初始化 three.js 预览器
+        setTimeout(function() {
+            if (window.initZhuniuViewer) initZhuniuViewer('zhuniu-3d');
+        }, 60);
+    }
+    playZhuniuSong();   // 复用珍珠奶茶的音乐播放代码，播放炸闺蜜.mp3
 }
 
 // ---------------- 购物车 ----------------
@@ -384,6 +432,8 @@ function goToPayment(name, price, img) {
 
     stopMixueSong();
     stopYingtaoSong();
+    stopZhuniuSong();
+    if (window.disposeZhuniuViewer) disposeZhuniuViewer();
     showPage('payment-page');
 }
 
